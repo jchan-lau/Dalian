@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diebold-Yilmaz Connectedness, MST &amp; Consensus Backbone &middot; Users&rsquo; Guide</title>
+<style>
+:root{
+  --bg:#f4f6f8; --panel:#ffffff; --ink:#1d2733; --muted:#5b6b7b; --line:#dde3e9;
+  --accent:#1f5fa6; --accent2:#0d3a66; --pos:#c0392b; --neg:#2471a3; --warn:#b9770e;
+  --green:#2e8b57;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.62;font-size:15px}
+header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:22px 26px}
+header h1{margin:0;font-size:21px;font-weight:650}
+header p{margin:6px 0 0;font-size:13.5px;opacity:.9}
+nav.top{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+nav.top a{color:#fff;text-decoration:none;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;
+  font-size:12.5px;font-weight:600;border:1px solid rgba(255,255,255,.25)}
+nav.top a:hover{background:rgba(255,255,255,.3)}
+nav.top a.here{background:#fff;color:var(--accent2)}
+.wrap{max-width:880px;margin:0 auto;padding:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px 26px;margin-bottom:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.panel h2{margin:0 0 10px;font-size:18px;color:var(--accent2)}
+.panel h3{margin:18px 0 6px;font-size:15px;color:var(--accent2)}
+.step{display:flex;gap:14px;margin:14px 0;align-items:flex-start}
+.stepnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-size:14px;margin-top:2px}
+.intuition{background:#f7faf7;border-left:3px solid #6aa84f;padding:10px 14px;font-size:13.5px;color:#33503a;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.keypoint{background:#f3f7fb;border-left:3px solid var(--accent);padding:10px 14px;font-size:13.5px;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.warnbox{background:#fef6e7;border-left:3px solid var(--warn);padding:10px 14px;font-size:13.5px;color:#6b4a00;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.note{font-size:12.5px;color:var(--muted)}
+code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:12.5px}
+pre{background:#0d3a66;color:#e8eef5;border-radius:8px;padding:12px 16px;font-size:12.5px;overflow-x:auto;line-height:1.55}
+table.ex{border-collapse:collapse;margin:10px 0;font-size:12.5px;width:100%}
+table.ex th,table.ex td{border:1px solid var(--line);padding:4px 9px;text-align:right;white-space:nowrap}
+table.ex th{background:#f7f9fb;color:var(--muted);font-weight:600}
+table.ex td:first-child,table.ex th:first-child{text-align:left;font-weight:600}
+table.ref{border-collapse:collapse;margin:10px 0;font-size:13px;width:100%}
+table.ref th,table.ref td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+table.ref th{background:#f7f9fb;color:var(--muted);font-weight:600}
+.tblscroll{overflow-x:auto}
+.foot{color:var(--muted);font-size:12px;text-align:center;padding:8px 0 30px}
+.navbtns{display:flex;justify-content:space-between;gap:10px;margin:6px 0 26px}
+.navbtns a{background:var(--accent);color:#fff;text-decoration:none;border-radius:8px;padding:9px 16px;
+  font-size:13.5px;font-weight:600}
+.navbtns a:hover{background:var(--accent2)}
+var{font-family:Georgia,'Times New Roman',serif;font-style:italic}
+.toc{font-size:13.5px;columns:2;column-gap:30px}
+.toc a{color:var(--accent);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+kbd{background:#eef2f6;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 7px;
+  font-size:12px;font-family:inherit;font-weight:600;color:var(--accent2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Diebold-Yilmaz Connectedness, MST &amp; Consensus Backbone &middot; Users&rsquo; Guide</h1>
+  <p>How to prepare your data, run the analysis, and read every panel of the results</p>
+  <nav class="top">
+    <a href="DY_Connectedness_MST_Backbone_Tool_v02.html">Tool</a>
+    <a href="methods_var_fevd.html">Methods</a>
+  </nav>
+</header>
+<div class="wrap">
+
+<div class="panel">
+  <h2>Contents</h2>
+  <div class="toc">
+    <a href="#quick">1 &middot; Quick start</a><br>
+    <a href="#data">2 &middot; Data inputs</a><br>
+    <a href="#settings">3 &middot; Model settings</a><br>
+    <a href="#walk">4 &middot; Walkthrough with the example</a><br>
+    <a href="#panels">5 &middot; Reading the results, panel by panel</a><br>
+    <a href="#backbone">6 &middot; The consensus backbone in detail</a><br>
+    <a href="#layouts">7 &middot; Network &amp; tree layouts</a><br>
+    <a href="#owndata">8 &middot; Preparing your own data</a><br>
+    <a href="#trouble">9 &middot; Troubleshooting</a>
+  </div>
+</div>
+
+<div class="panel" id="quick">
+  <h2>1 &middot; Quick start</h2>
+  <div class="step"><div class="stepnum">1</div><div>
+     Open <a href="DY_Connectedness_MST_Backbone_Tool_v02.html">the tool</a> and click
+     <kbd>Load bundled example data</kbd> &mdash; or upload your own CSV (format in Section&nbsp;2).</div></div>
+  <div class="step"><div class="stepnum">2</div><div>
+     In panel 2, keep the defaults (VAR lag <var>p</var>&nbsp;=&nbsp;1, horizon <var>H</var>&nbsp;=&nbsp;10,
+     Cholesky order &ldquo;As in file&rdquo;) and click <kbd>Run analysis</kbd>.</div></div>
+  <div class="step"><div class="stepnum">3</div><div>
+     Read the results in panels 3&ndash;7: the summary KPIs and net-connectedness rankings, the full
+     connectedness tables, the dense spillover networks, the three minimum spanning trees, and the directed
+     consensus backbone.</div></div>
+  <p class="note">The tool is a single HTML file: it runs entirely in your browser, needs no installation or internet
+     connection, and your data never leave your machine. Every panel has a <b>&#128214; Method notes</b> link. The guide
+     and method pages open in the same tab, while the tool keeps the loaded data, settings, calculated results, and
+     scroll position in session storage. Returning to the tool restores that working state automatically; closing the
+     tab discards it.</p>
+</div>
+
+<div class="panel" id="data">
+  <h2>2 &middot; Data inputs</h2>
+  <p>The tool accepts a single CSV (comma- or tab-separated) laid out as a <b>time-series matrix</b>: each
+     <em>column</em> is one variable (a market, asset, or institution) and each <em>row</em> is one time period.
+     This is the standard &ldquo;wide&rdquo; format produced by almost any data provider.</p>
+
+  <h3>Layout</h3>
+  <p>An optional date/label column may appear first; the tool detects it and any other non-numeric columns and
+     <b>ignores them automatically</b>, computing only on the numeric series. The first rows of the bundled example
+     (12 global markets, weekly, 2015 onward):</p>
+  <div class="tblscroll">
+  <table class="ex">
+    <tr><th>Date</th><th>US_EQ</th><th>EU_EQ</th><th>JP_EQ</th><th>&hellip;</th><th>OIL</th><th>GOLD</th></tr>
+    <tr><td>2015-01-05</td><td>-0.382</td><td>0.491</td><td>1.360</td><td>&hellip;</td><td>0.184</td><td>1.213</td></tr>
+    <tr><td>2015-01-12</td><td>0.529</td><td>0.271</td><td>0.551</td><td>&hellip;</td><td>-1.485</td><td>0.471</td></tr>
+    <tr><td>2015-01-19</td><td>-1.488</td><td>-0.264</td><td>-0.143</td><td>&hellip;</td><td>0.246</td><td>-0.374</td></tr>
+  </table></div>
+  <p class="note">The example&rsquo;s twelve series are four equity indices (<code>US_EQ</code>, <code>EU_EQ</code>,
+     <code>JP_EQ</code>, <code>CN_EQ</code>), four 10-year sovereign yields (<code>UST_10Y</code>,
+     <code>BUND_10Y</code>, <code>JGB_10Y</code>, <code>CGB_10Y</code>), two currencies (<code>USD</code>,
+     <code>EUR</code>), and two commodities (<code>OIL</code>, <code>GOLD</code>). On load the status line confirms
+     how many series and observations were read and lists the series names.</p>
+
+  <h3>Pre-process before loading</h3>
+  <div class="keypoint">The tool computes a VAR on <b>exactly the numbers you provide</b>. It does not transform your
+     data. A connectedness VAR should be estimated on series that are (approximately) <b>stationary</b> &mdash; so
+     convert prices or index levels to <b>returns or log-differences</b>, and yields to <b>changes</b>, before
+     loading. The bundled example is already in standardized-return form.</div>
+  <p>You may, if you wish, standardize each series (subtract the mean, divide by the standard deviation) so that
+     contributions are comparable across markets of very different volatility; this is optional and does not change
+     the generalized decomposition&rsquo;s order-invariance.</p>
+
+  <h3>Validation rules</h3>
+  <p>You need at least <b>two</b> numeric series. Numbers must use a dot as the decimal separator, with no thousands
+     separators or currency symbols. There must be comfortably more observations than parameters: a VAR(<var>p</var>)
+     on <var>k</var> series estimates <var>1&nbsp;+&nbsp;k&times;p</var> coefficients per equation, so the tool
+     requires the number of usable rows (<var>T&nbsp;&minus;&nbsp;p</var>) to exceed that &mdash; and warns if you are
+     close to the limit. Reduce the lag length or supply more data if you hit this.</p>
+  <p class="note">Use <kbd>Download example CSV</kbd> in panel&nbsp;1 to save the bundled data
+     (<code>example_data.csv</code>) as a template for your own file.</p>
+</div>
+
+<div class="panel" id="settings">
+  <h2>3 &middot; Model settings (panel 2)</h2>
+  <table class="ref">
+    <tr><th style="width:26%">Control</th><th>What it does &amp; how to choose</th></tr>
+    <tr><td><b>VAR lag length <var>p</var></b></td>
+        <td>The number of own- and cross-lags in the vector autoregression (default 1). Higher <var>p</var> captures
+            richer dynamics but consumes degrees of freedom fast. For weekly/monthly macro-financial returns
+            <var>p</var>&nbsp;=&nbsp;1&ndash;2 is usually enough; pick by an information criterion if you have one in
+            mind, and watch the &ldquo;too few observations&rdquo; guard.</td></tr>
+    <tr><td><b>Forecast horizon <var>H</var></b></td>
+        <td>The forecast-error-variance horizon over which spillovers are measured (default 10). Short horizons
+            emphasize immediate transmission; longer horizons let indirect, multi-step spillovers accumulate.
+            Connectedness typically rises with <var>H</var> and then stabilizes &mdash; try 5, 10, 20 to see the
+            plateau.</td></tr>
+    <tr><td><b>Cholesky variable order</b></td>
+        <td>Controls only the <em>orthogonalized</em> (Cholesky) decomposition. <b>As in file</b> uses the column
+            order; <b>Reversed</b> flips it; <b>Custom</b> lets you type a comma-separated list of all series names
+            (exactly once each). Earlier variables are treated as more &ldquo;exogenous&rdquo;. Change it to see how
+            sensitive the Cholesky result is &mdash; the generalized result does not move.</td></tr>
+  </table>
+  <div class="intuition"><b>Two decompositions, side by side.</b> Decomposition&nbsp;1 is the
+     <b>Diebold-Yilmaz (2012) generalized</b> FEVD: it is order-invariant (for a linear VAR it coincides with the
+     Lanne-Nyberg 2016 decomposition) and is the headline result. Decomposition&nbsp;2 is the
+     <b>orthogonalized Cholesky</b> FEVD, which <em>depends on the variable order</em>. Showing both lets a workshop
+     audience see exactly how much the identification assumption matters.</div>
+</div>
+
+<div class="panel" id="walk">
+  <h2>4 &middot; Walkthrough with the bundled example</h2>
+  <p>The example is a synthetic but internally consistent panel of twelve global markets in standardized-return form.
+     Follow along:</p>
+  <div class="step"><div class="stepnum">1</div><div>
+     <b>Load.</b> Click <kbd>Load bundled example data</kbd>. The status line confirms
+     <b>12 series</b> and the number of weekly observations, and lists the names. The Custom-order box is pre-filled
+     with the file order so you can edit it later if you want.</div></div>
+  <div class="step"><div class="stepnum">2</div><div>
+     <b>Run.</b> Keep the defaults (<var>p</var>&nbsp;=&nbsp;1, <var>H</var>&nbsp;=&nbsp;10, order &ldquo;As in
+     file&rdquo;) and click <kbd>Run analysis</kbd>. The results section appears and the page scrolls to it.</div></div>
+  <div class="step"><div class="stepnum">3</div><div>
+     <b>Summary (panel 3).</b> Read the four KPI cards: the <b>total connectedness index (TCI)</b> for each
+     decomposition &mdash; the share of total forecast-error variance that is cross-market &mdash; and the current
+     <b>largest companion-root modulus</b>, residual degrees of freedom, <b>top net transmitter</b> and <b>top net receiver</b>. The root modulus must be below one for a stable VAR. The two net-directional bar charts rank every market:
+     red bars are net transmitters of shocks, blue bars net receivers. Compare the generalized ranking with the
+     Cholesky one to gauge order-sensitivity.</div></div>
+  <div class="step"><div class="stepnum">4</div><div>
+     <b>Connectedness tables (panel 4).</b> Each cell (<var>i</var>,&nbsp;<var>j</var>) is the percentage of market
+     <var>i</var>&rsquo;s <var>H</var>-step forecast-error variance explained by shocks to market <var>j</var>; rows
+     sum to 100. The margins give <b>FROM</b> (received from others), <b>TO</b> (transmitted to others),
+     <b>NET</b>&nbsp;=&nbsp;TO&nbsp;&minus;&nbsp;FROM, and the <b>TCI</b>. The two matrices below the tables report net
+     pairwise transmission: a positive row-i/column-j cell means i dominates j within that pair.</div></div>
+  <div class="step"><div class="stepnum">5</div><div>
+     <b>Networks (panel 5).</b> The dense directed spillover graph for each decomposition. Drag the
+     <b>edge-threshold</b> slider to thin weak links and reveal the dominant channels; switch between the circular
+     (DY/Gabauer standard) and Fruchterman-Reingold layouts.</div></div>
+  <div class="step"><div class="stepnum">6</div><div>
+     <b>Minimum spanning trees (panel 6).</b> Three trees built from three reduction rules (Section&nbsp;5). Use the
+     <b>Build MSTs from</b> selector to switch between the generalized and Cholesky decompositions and try the
+     different tree layouts.</div></div>
+  <div class="step"><div class="stepnum">7</div><div>
+     <b>Consensus backbone (panel 7).</b> The directed sparsification. Start with the defaults
+     (<var>k<sub>r</sub></var>&nbsp;=&nbsp;3 roots, <var>k<sub>p</sub></var>&nbsp;=&nbsp;3 arborescences per root,
+     penalty&nbsp;&gamma;&nbsp;=&nbsp;0.5, doubly-stochastic normalization) and read the diagnostic cards, including
+     the <b>Suggested&nbsp;k*</b>. See Section&nbsp;6 for how to tune it.</div></div>
+  <p class="note" style="margin-top:12px">Every result reacts live to the controls inside each panel &mdash; moving the
+     threshold slider, switching layouts, or changing the backbone parameters re-renders immediately without a fresh
+     <kbd>Run analysis</kbd>. Re-run only when you change the data, the lag, the horizon, or the Cholesky order.</p>
+</div>
+
+<div class="panel" id="panels">
+  <h2>5 &middot; Reading the results, panel by panel</h2>
+  <table class="ref">
+    <tr><th style="width:30%">Output</th><th>How to read it</th></tr>
+    <tr><td><b>KPI cards (panel 3)</b></td>
+        <td>TCI = system-wide connectedness (higher = more integrated/contagious); top net transmitter and receiver
+            are the current extremes of the NET ranking. Two TCI cards (generalized vs Cholesky) show how much the
+            identification choice moves the headline number.</td></tr>
+    <tr><td><b>Net-directional rankings</b></td>
+        <td>NET<sub>i</sub> = TO<sub>i</sub> &minus; FROM<sub>i</sub>. Red (positive) = net source of shocks; blue
+            (negative) = net absorber. Bar length is scaled to the largest absolute net value.</td></tr>
+    <tr><td><b>Connectedness table</b></td>
+        <td>A pairwise variance-decomposition matrix. Row <var>i</var> = where market <var>i</var>&rsquo;s
+            uncertainty comes from; column <var>j</var> = where market <var>j</var>&rsquo;s shocks go. Cell shading
+            scales with the off-diagonal magnitude; the bottom rows give TO and NET, the right column FROM, and the
+            corner the TCI. The net-pairwise matrices below show C(i&rarr;j)&nbsp;&minus;&nbsp;C(j&rarr;i).</td></tr>
+    <tr><td><b>Dense network (panel 5)</b></td>
+        <td>Node colour = net role (red transmitter, blue receiver); node size = total connectedness
+            (TO&nbsp;+&nbsp;FROM); arrows point transmitter&nbsp;&rarr;&nbsp;receiver with width and opacity scaled to
+            the pairwise directional connectedness. The threshold is expressed as a percent of the strongest edge.</td></tr>
+    <tr><td><b>Minimum spanning trees (panel 6)</b></td>
+        <td>The connectedness network is directed, so each reciprocal pair (<var>i</var>&rarr;<var>j</var> and
+            <var>j</var>&rarr;<var>i</var>) must be reduced to one undirected weight before a tree can be built. Three
+            economically distinct rules are shown, each as a <em>maximum</em> spanning tree (it keeps the strongest
+            links):
+            <br><b>Criterion 1 &mdash; Sum:</b> C(i&rarr;j)&nbsp;+&nbsp;C(j&rarr;i), total bilateral connectedness
+            (co-movement clusters).
+            <br><b>Criterion 2 &mdash; Absolute difference:</b> |C(i&rarr;j)&nbsp;&minus;&nbsp;C(j&rarr;i)|, net
+            asymmetry (who dominates whom).
+            <br><b>Criterion 3 &mdash; Maximum:</b> max of the two, the dominant one-way channel (principal
+            propagation routes).</td></tr>
+    <tr><td><b>Consensus backbone (panel 7)</b></td>
+        <td>A directed sparsification (Chan-Lau 2026): the union of maximum directed spanning trees
+            (<em>arborescences</em>) rooted at the top emitters. Arrowheads show spillover direction; edge thickness =
+            frequency across arborescences; node size = emitter strength; a gold ring with a star marks a root. The
+            diagnostic cards report the roots, edge count, weight retained, density, reachability, raw-weight out-strength
+            R&sup2;, and the suggested <var>k*</var>. The directional-measure bar chart underneath lets you rank nodes
+            by net/out/in strength or degree.</td></tr>
+  </table>
+</div>
+
+<div class="panel" id="backbone">
+  <h2>6 &middot; The consensus backbone in detail (panel 7)</h2>
+  <p>The backbone is the tool&rsquo;s most configurable panel. Unlike an MST it preserves both <b>direction</b> and
+     <b>redundancy</b>, so alternative spillover routes survive.</p>
+  <table class="ref">
+    <tr><th style="width:30%">Control</th><th>What it does &amp; how to choose</th></tr>
+    <tr><td><b>Source decomposition</b></td>
+        <td>Build from the generalized (DY 2012) or the Cholesky table. Generalized is the default and is
+            order-invariant.</td></tr>
+    <tr><td><b>Normalization</b></td>
+        <td><b>Doubly-stochastic (Sinkhorn)</b> &mdash; the recommended default &mdash; exposes the scale-invariant
+            latent structure. <b>Row-stochastic</b> emphasizes emission profiles; <b>column-stochastic</b> emphasizes
+            receiver vulnerability. Each changes which links survive. The tool verifies positive support and numerical
+            convergence; an infeasible Sinkhorn scaling is reported instead of used.</td></tr>
+    <tr><td><b>Roots <var>k<sub>r</sub></var></b></td>
+        <td>How many top emitter nodes to root arborescences at. More roots = more of the network covered.</td></tr>
+    <tr><td><b>Arborescences per root <var>k<sub>p</sub></var></b></td>
+        <td>How many edge-diversified trees each root contributes (a &ldquo;branching pack&rdquo;). More packs =
+            more redundant routes retained.</td></tr>
+    <tr><td><b>Penalty &gamma;</b></td>
+        <td>The edge-reuse factor (0.05&ndash;0.95) applied after each use. Lower &gamma; imposes a stronger penalty and
+            produces more diversified routes; higher &gamma; permits more reuse.</td></tr>
+    <tr><td><b>Layout</b></td>
+        <td>Kamada-Kawai, Fruchterman-Reingold, or Circular &mdash; positions only, never the data.</td></tr>
+  </table>
+  <div class="intuition"><b>Suggested k*.</b> The diagnostic card applies a composite saturation criterion: after the
+     first gain, it stops at the first <var>k<sub>p</sub></var> whose marginal gain in the combined weight / density /
+     reachability / raw out-strength-R&sup2; score falls below 10% of that first step. It is a principled starting point &mdash; set
+     <var>k<sub>p</sub></var> to the suggested <var>k*</var>, then adjust to taste.</div>
+  <div class="keypoint">Read the diagnostics together: <b>weight retained</b> is how much of the total spillover mass
+     the sparse backbone keeps; <b>density</b> is the fraction of all possible directed edges it uses;
+     <b>reachability</b> is how much of the network the backbone still connects; and <b>raw out-strength R&sup2;</b>
+     compares retained and full-network transmitter strengths on the same unnormalised edge scale. A good backbone keeps
+     most of the weight and reachability with only a small fraction of the edges.</div>
+</div>
+
+<div class="panel" id="layouts">
+  <h2>7 &middot; Network &amp; tree layouts</h2>
+  <p>Layouts change only the <em>positions</em> of the nodes, never the underlying numbers. Each emphasizes something
+     different:</p>
+  <table class="ref">
+    <tr><th style="width:30%">Layout</th><th>What it shows best</th></tr>
+    <tr><td><b>Circular</b> (DY/Gabauer standard)</td>
+        <td>All markets on one ring. Because positions are fixed and neutral the <em>edges</em> stand out &mdash; the
+            cleanest view of who spills over to whom, and ideal for comparing the generalized and Cholesky graphs
+            side by side. The default for the dense networks.</td></tr>
+    <tr><td><b>Kamada-Kawai</b></td>
+        <td>On-screen distances approximate shortest-path distances. The best general-purpose overview: central
+            markets end up central, peripheral ones drift outward. The default for the trees and backbone.</td></tr>
+    <tr><td><b>Fruchterman-Reingold</b> (spring)</td>
+        <td>Linked markets attract, all markets repel. In the dense panel, only threshold-surviving bilateral links act
+            as springs and their strength scales attraction, so moving the threshold recomputes the layout.</td></tr>
+  </table>
+  <p class="note">The dense-network panel offers Circular and Fruchterman-Reingold; the MST and backbone panels add
+     Kamada-Kawai. All force-based layouts are computed deterministically, so each picture is reproducible.</p>
+</div>
+
+<div class="panel" id="owndata">
+  <h2>8 &middot; Preparing your own data</h2>
+  <p>A practical checklist:</p>
+  <div class="step"><div class="stepnum">1</div><div><b>Shape the file.</b> One column per variable, one row per
+     period, an optional date column first. Keep column headers short and free of commas.</div></div>
+  <div class="step"><div class="stepnum">2</div><div><b>Make it stationary.</b> Convert price/index levels to
+     returns or log-differences and yields to changes <em>before</em> loading. Estimating connectedness on
+     non-stationary levels produces spurious spillovers.</div></div>
+  <div class="step"><div class="stepnum">3</div><div><b>Align dates and clean gaps.</b> All series on the same
+     calendar with no missing cells in the numeric block; drop or impute holidays consistently. The tool reads the
+     numbers as given.</div></div>
+  <div class="step"><div class="stepnum">4</div><div><b>Mind the dimensions.</b> Keep enough rows relative to
+     <var>k</var> and <var>p</var> (see the validation rule in Section&nbsp;2). With many series, start at
+     <var>p</var>&nbsp;=&nbsp;1.</div></div>
+  <div class="step"><div class="stepnum">5</div><div><b>Sanity-check on load.</b> The status line should report the
+     series count and names you expect. If a column you wanted is missing, it was non-numeric and got dropped &mdash;
+     check for stray text or symbols.</div></div>
+  <div class="step"><div class="stepnum">6</div><div><b>Vary the horizon.</b> Re-run at a few horizons
+     (<var>H</var>&nbsp;=&nbsp;5, 10, 20) to confirm your connectedness conclusions are not an artefact of one
+     choice.</div></div>
+</div>
+
+<div class="panel" id="trouble">
+  <h2>9 &middot; Troubleshooting</h2>
+  <table class="ref">
+    <tr><th style="width:38%">Symptom</th><th>Cause &amp; fix</th></tr>
+    <tr><td><i>&ldquo;Need at least 2 numeric series.&rdquo;</i></td>
+        <td>Only one numeric column was detected. Other columns were treated as labels &mdash; check for text,
+            symbols, or thousands separators that turned a numeric column non-numeric.</td></tr>
+    <tr><td><i>&ldquo;Too few observations&hellip;&rdquo;</i></td>
+        <td>A VAR(<var>p</var>) on <var>k</var> series needs comfortably more than <var>1&nbsp;+&nbsp;k&times;p</var>
+            rows per equation. Lower the lag length or supply more data.</td></tr>
+    <tr><td><i>&ldquo;Custom order must list all series names exactly once.&rdquo;</i></td>
+        <td>The custom Cholesky order is missing a name, has a typo, or repeats one. Copy the names from the status
+            line; the box is pre-filled with the file order as a template.</td></tr>
+    <tr><td><i>&ldquo;estimates may be imprecise&rdquo; warning</i></td>
+        <td>The run succeeded but there are few usable rows per parameter. Treat the numbers as indicative; reduce
+             <var>p</var> or add data for firmer estimates.</td></tr>
+    <tr><td><i>&ldquo;The fitted VAR is unstable&hellip;&rdquo;</i></td>
+        <td>The estimated largest companion-root modulus is at least one, so the stationary Wold/FEVD interpretation
+            does not apply. Use returns or differences, reduce the lag length, or revise the model.</td></tr>
+    <tr><td><i>&ldquo;Sinkhorn normalization did not converge&hellip;&rdquo;</i></td>
+        <td>The selected decomposition and horizon do not provide support for a doubly-stochastic scaling. This can
+            occur for a short-horizon Cholesky FEVD. Choose row/column normalization, a longer horizon, or generalized FEVD.</td></tr>
+    <tr><td>Cholesky result changes a lot with order; generalized does not</td>
+        <td>Expected &mdash; that is the point of showing both. The order-dependence is a property of orthogonalized
+            decompositions; rely on the generalized result for order-free conclusions.</td></tr>
+    <tr><td>A column you expected is absent from the results</td>
+        <td>It was non-numeric and auto-ignored. Remove text/symbols, or move a genuine label into the first
+            (date) column.</td></tr>
+  </table>
+</div>
+
+<div class="navbtns">
+  <a href="DY_Connectedness_MST_Backbone_Tool_v02.html">&larr; Back to the tool</a>
+  <a href="methods_var_fevd.html">Method notes &rarr;</a>
+</div>
+
+<div class="foot">
+   <b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> The Diebold-Yilmaz Connectedness, MST &amp; Consensus Backbone Tool
+   and its accompanying documentation are licensed under the
+   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives
+   4.0 International License (CC BY-NC-ND 4.0)</a>.<br>
+   The complete license terms and disclaimer applicable to these materials are provided in the
+   <a href="DY_Connectedness_MST_Backbone_Tool_v02.html#legal">tool&rsquo;s legal notice</a>.</div>
+</div>
+</body>
+</html>
