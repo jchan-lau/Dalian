@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Diebold-Yilmaz connectedness, minimum spanning tree, and consensus-backbone browser tool and documentation.">
+<title>Connectedness, MST &amp; Consensus Backbone Tool</title>
+<style>
+:root{
+  --navy:#0d3a66;--blue:#1f5fa6;--ink:#1d2733;--muted:#5b6b7b;
+  --line:#dce4ec;--paper:#fff;--bg:#f3f6f9;--soft:#eaf1f8;--green:#2f6b4f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:52px 24px 48px}
+.hero{max-width:1080px;margin:0 auto}
+.eyebrow{margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.82}
+h1{max-width:900px;margin:0;font-size:clamp(29px,4.8vw,49px);line-height:1.09;letter-spacing:-.025em}
+.lead{max-width:800px;margin:18px 0 0;font-size:17px;opacity:.92}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.button{display:inline-block;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:700;text-decoration:none}
+.button.primary{background:#fff;color:var(--navy)}
+.button.secondary{border:1px solid rgba(255,255,255,.55);color:#fff}
+.button:hover{transform:translateY(-1px)}
+main{max-width:1080px;margin:0 auto;padding:32px 22px 46px}
+.notice{display:flex;gap:12px;align-items:flex-start;background:#edf6ef;border:1px solid #cfe4d3;border-radius:10px;padding:14px 16px;color:#285534}
+.notice strong{white-space:nowrap}
+h2{margin:32px 0 14px;font-size:20px;color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{display:flex;flex-direction:column;min-height:200px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(13,58,102,.05)}
+.card .tag{align-self:flex-start;background:var(--soft);color:var(--navy);border-radius:999px;padding:3px 9px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.card h3{margin:13px 0 7px;font-size:17px}
+.card p{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+.card a{margin-top:auto;color:var(--blue);font-weight:700;text-decoration:none}
+.card a:hover{text-decoration:underline}
+.methods{display:flex;flex-wrap:wrap;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px}
+.methods a{background:var(--soft);border:1px solid #d7e2ed;border-radius:999px;padding:7px 12px;color:var(--navy);font-size:13px;font-weight:700;text-decoration:none}
+.methods a:hover{background:#dbe9f6}
+.about{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px}
+.about p{margin:0;color:var(--muted)}
+footer{max-width:1080px;margin:0 auto;padding:0 22px 34px;text-align:center;color:var(--muted);font-size:12px}
+footer a{color:var(--blue)}
+@media(max-width:760px){header{padding-top:38px}.grid{grid-template-columns:1fr}.notice{display:block}.notice strong{display:block;margin-bottom:4px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <p class="eyebrow">Financial connectedness analysis</p>
+    <h1>Diebold-Yilmaz Connectedness, MST &amp; Consensus Backbone</h1>
+    <p class="lead">Estimate connectedness from a vector autoregression, compare generalized and Cholesky variance decompositions, and explore dense networks, spanning trees, and directed consensus backbones.</p>
+    <div class="actions">
+      <a class="button primary" href="DY_Connectedness_MST_Backbone_Tool_v02.html">Launch the corrected tool</a>
+      <a class="button secondary" href="DY_Connectedness_MST_Backbone_Users_Guide.html">Read the user&rsquo;s guide</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="notice">
+    <strong>Private by design.</strong>
+    <span>The tool has no server backend or outbound data calls. Uploaded CSV files, model estimates, and visualizations remain in your browser.</span>
+  </div>
+
+  <h2>Resources</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Interactive</span>
+      <h3>Browser calculator</h3>
+      <p>Load a time-series CSV, estimate the VAR and FEVDs, and generate connectedness tables and network reductions without installing software.</p>
+      <a href="DY_Connectedness_MST_Backbone_Tool_v02.html">Open the calculator &rarr;</a>
+    </article>
+    <article class="card">
+      <span class="tag">Practical guide</span>
+      <h3>User&rsquo;s guide</h3>
+      <p>Learn how to prepare data, choose model and network settings, run the analysis, and interpret each results panel.</p>
+      <a href="DY_Connectedness_MST_Backbone_Users_Guide.html">Read the guide &rarr;</a>
+    </article>
+    <article class="card">
+      <span class="tag">Example</span>
+      <h3>Bundled dataset</h3>
+      <p>Download the example time-series CSV used by the browser tool for demonstrations and reproducible workshop exercises.</p>
+      <a href="example_data.csv" download>Download the example data &rarr;</a>
+    </article>
+  </div>
+
+  <h2>Method notes</h2>
+  <nav class="methods" aria-label="Method notes">
+    <a href="methods_var_fevd.html">VAR &amp; FEVD</a>
+    <a href="methods_connectedness.html">Connectedness measures</a>
+    <a href="methods_networks.html">Directed networks</a>
+    <a href="methods_mst.html">Minimum spanning trees</a>
+    <a href="methods_backbone.html">Consensus backbones</a>
+  </nav>
+
+  <h2>About</h2>
+  <div class="about">
+    <p>The corrected version uses numerically stable VAR estimation, residual degrees-of-freedom scaling, stability checks, guarded network normalization, and internally consistent backbone diagnostics. Session-only browser storage restores loaded data, settings, and calculated results after visits to the documentation pages.</p>
+  </div>
+</main>
+
+<footer>
+  <p><b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> The Diebold-Yilmaz Connectedness, MST &amp; Consensus Backbone Tool and its accompanying documentation are licensed under the <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 License</a>.</p>
+  <p>See the <a href="DY_Connectedness_MST_Backbone_Tool_v02.html#legal">complete legal notice and disclaimer</a>.</p>
+</footer>
+</body>
+</html>
