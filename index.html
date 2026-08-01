@@ -1,13 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0; url=DebtRank/">
-  <link rel="canonical" href="DebtRank/">
-  <title>DebtRank Systemic Risk Tool</title>
-  <script>window.location.replace("DebtRank/");</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Browser-based financial-network analysis tools for systemic risk and connectedness research.">
+<title>Financial Network Analysis Tools</title>
+<style>
+:root{
+  --navy:#0d3a66;--blue:#1f5fa6;--ink:#1d2733;--muted:#5b6b7b;
+  --line:#dce4ec;--paper:#fff;--bg:#f3f6f9;--soft:#eaf1f8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:58px 24px 54px}
+.hero{max-width:1040px;margin:0 auto}
+.eyebrow{margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.82}
+h1{max-width:820px;margin:0;font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-.025em}
+.lead{max-width:780px;margin:18px 0 0;font-size:17px;opacity:.92}
+main{max-width:1040px;margin:0 auto;padding:36px 22px 50px}
+.notice{display:flex;gap:12px;align-items:flex-start;background:#edf6ef;border:1px solid #cfe4d3;border-radius:10px;padding:14px 16px;color:#285534}
+.notice strong{white-space:nowrap}
+h2{margin:34px 0 15px;font-size:21px;color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{display:flex;flex-direction:column;min-height:300px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 3px 12px rgba(13,58,102,.06)}
+.card .tag{align-self:flex-start;background:var(--soft);color:var(--navy);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.card h3{margin:16px 0 9px;font-size:22px;line-height:1.25;color:var(--navy)}
+.card p{margin:0 0 22px;color:var(--muted);font-size:14px}
+.features{margin:0 0 24px;padding-left:20px;color:var(--muted);font-size:13.5px}
+.features li+li{margin-top:5px}
+.card a{align-self:flex-start;margin-top:auto;display:inline-block;border-radius:8px;padding:10px 16px;background:var(--blue);color:#fff;font-size:14px;font-weight:700;text-decoration:none}
+.card a:hover{background:var(--navy);transform:translateY(-1px)}
+.about{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px}
+.about p{margin:0;color:var(--muted)}
+footer{max-width:1040px;margin:0 auto;padding:0 22px 34px;text-align:center;color:var(--muted);font-size:12px}
+@media(max-width:760px){
+  header{padding-top:40px}
+  .grid{grid-template-columns:1fr}
+  .notice{display:block}
+  .notice strong{display:block;margin-bottom:4px}
+}
+</style>
 </head>
 <body>
-  <p><a href="DebtRank/">Open the DebtRank Systemic Risk Tool</a></p>
+<header>
+  <div class="hero">
+    <p class="eyebrow">Financial-network analysis</p>
+    <h1>Systemic Risk &amp; Connectedness Tools</h1>
+    <p class="lead">Interactive, browser-based tools for studying shock propagation, systemic importance, interconnectedness, and network structure.</p>
+  </div>
+</header>
+
+<main>
+  <div class="notice">
+    <strong>Private by design.</strong>
+    <span>The analytical tools run locally in your browser. Uploaded data and calculations are not sent to a server.</span>
+  </div>
+
+  <h2>Choose a tool</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Systemic risk</span>
+      <h3>DebtRank Systemic Risk Tool</h3>
+      <p>Analyze distress propagation and systemic importance in financial networks using bilateral exposures or aggregate balance-sheet data.</p>
+      <ul class="features">
+        <li>DebtRank shock-propagation scenarios</li>
+        <li>Network stability diagnostics</li>
+        <li>Loss distributions and fire-sale analysis</li>
+      </ul>
+      <a href="DebtRank/">Open DebtRank &rarr;</a>
+    </article>
+
+    <article class="card">
+      <span class="tag">Connectedness</span>
+      <h3>Diebold-Yilmaz Connectedness, MST &amp; Consensus Backbone</h3>
+      <p>Estimate VAR-based connectedness and explore generalized and Cholesky variance decompositions, spanning trees, and directed consensus backbones.</p>
+      <ul class="features">
+        <li>VAR and forecast-error variance decompositions</li>
+        <li>Connectedness tables and directed networks</li>
+        <li>Minimum spanning trees and consensus backbones</li>
+      </ul>
+      <a href="Connectedness/">Open Connectedness &rarr;</a>
+    </article>
+  </div>
+
+  <h2>About</h2>
+  <div class="about">
+    <p>Each tool includes its own user guide, methodological documentation, license information, and disclaimer. No software installation is required for the browser versions.</p>
+  </div>
+</main>
+
+<footer>
+  <p><b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> See each tool&rsquo;s page for its applicable license and complete legal notice.</p>
+</footer>
 </body>
 </html>
