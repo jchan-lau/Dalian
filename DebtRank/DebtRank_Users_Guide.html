@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DebtRank &middot; Users&rsquo; Guide</title>
+<style>
+:root{
+  --bg:#f4f6f8; --panel:#ffffff; --ink:#1d2733; --muted:#5b6b7b; --line:#dde3e9;
+  --accent:#1f5fa6; --accent2:#0d3a66; --pos:#c0392b; --neg:#2471a3; --warn:#b9770e;
+  --green:#2e8b57;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.62;font-size:15px}
+header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:22px 26px}
+header h1{margin:0;font-size:21px;font-weight:650}
+header p{margin:6px 0 0;font-size:13.5px;opacity:.9}
+nav.top{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+nav.top a{color:#fff;text-decoration:none;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;
+  font-size:12.5px;font-weight:600;border:1px solid rgba(255,255,255,.25)}
+nav.top a:hover{background:rgba(255,255,255,.3)}
+nav.top a.here{background:#fff;color:var(--accent2)}
+.wrap{max-width:880px;margin:0 auto;padding:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px 26px;margin-bottom:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.panel h2{margin:0 0 10px;font-size:18px;color:var(--accent2)}
+.panel h3{margin:18px 0 6px;font-size:15px;color:var(--accent2)}
+.step{display:flex;gap:14px;margin:14px 0;align-items:flex-start}
+.stepnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-size:14px;margin-top:2px}
+.intuition{background:#f7faf7;border-left:3px solid #6aa84f;padding:10px 14px;font-size:13.5px;color:#33503a;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.keypoint{background:#f3f7fb;border-left:3px solid var(--accent);padding:10px 14px;font-size:13.5px;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.warnbox{background:#fef6e7;border-left:3px solid var(--warn);padding:10px 14px;font-size:13.5px;color:#6b4a00;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.note{font-size:12.5px;color:var(--muted)}
+code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:12.5px}
+pre{background:#0d3a66;color:#e8eef5;border-radius:8px;padding:12px 16px;font-size:12.5px;overflow-x:auto;line-height:1.55}
+table.ex{border-collapse:collapse;margin:10px 0;font-size:12.5px;width:100%}
+table.ex th,table.ex td{border:1px solid var(--line);padding:4px 9px;text-align:right;white-space:nowrap}
+table.ex th{background:#f7f9fb;color:var(--muted);font-weight:600}
+table.ex td:first-child,table.ex th:first-child{text-align:left;font-weight:600}
+table.ref{border-collapse:collapse;margin:10px 0;font-size:13px;width:100%}
+table.ref th,table.ref td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+table.ref th{background:#f7f9fb;color:var(--muted);font-weight:600}
+.tblscroll{overflow-x:auto}
+.foot{color:var(--muted);font-size:12px;text-align:center;padding:8px 0 30px}
+.navbtns{display:flex;justify-content:space-between;gap:10px;margin:6px 0 26px}
+.navbtns a{background:var(--accent);color:#fff;text-decoration:none;border-radius:8px;padding:9px 16px;
+  font-size:13.5px;font-weight:600}
+.navbtns a:hover{background:var(--accent2)}
+var{font-family:Georgia,'Times New Roman',serif;font-style:italic}
+.toc{font-size:13.5px;columns:2;column-gap:30px}
+.toc a{color:var(--accent);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+kbd{background:#eef2f6;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 7px;
+  font-size:12px;font-family:inherit;font-weight:600;color:var(--accent2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>DebtRank &middot; Users&rsquo; Guide</h1>
+  <p>How to prepare your data, run a stress test, and read every panel of the results</p>
+  <nav class="top">
+    <a href="DebtRank_Systemic_Risk_Tool_v03.html">Tool</a>
+    <a href="DebtRank_Methods.html">Method description</a>
+    <a class="here" href="DebtRank_Users_Guide.html">Users&rsquo; guide</a>
+  </nav>
+</header>
+<div class="wrap">
+
+<div class="panel">
+  <h2>Contents</h2>
+  <div class="toc">
+    <a href="#quick">1 &middot; Quick start</a><br>
+    <a href="#data">2 &middot; Data inputs</a><br>
+    <a href="#settings">3 &middot; Scenario &amp; model settings</a><br>
+    <a href="#walk">4 &middot; Walkthrough with the example</a><br>
+    <a href="#panels">5 &middot; Reading the results, panel by panel</a><br>
+    <a href="#layouts">6 &middot; Network-diagram layouts</a><br>
+    <a href="#owndata">7 &middot; Preparing your own data</a><br>
+    <a href="#trouble">8 &middot; Troubleshooting</a><br>
+    <a href="#python">9 &middot; The Python companion tool</a>
+  </div>
+</div>
+
+<div class="panel" id="quick">
+  <h2>1 &middot; Quick start</h2>
+  <div class="step"><div class="stepnum">1</div><div>
+     Open <a href="DebtRank_Systemic_Risk_Tool_v03.html">the tool</a> and click
+     <kbd>Load bundled example (20 global banks)</kbd> &mdash; or upload your own CSV (formats in
+     Section&nbsp;2).</div></div>
+  <div class="step"><div class="stepnum">2</div><div>
+     In panel 2, keep the defaults (linear DebtRank, 1% external-asset shock on all banks) and click
+     <kbd>Run stress test</kbd>.</div></div>
+  <div class="step"><div class="stepnum">3</div><div>
+     Read the results in panels 3&ndash;5; optionally click <kbd>Run Monte-Carlo</kbd> in panel 6 for the loss
+     distribution and VaR/CVaR.</div></div>
+  <p class="note">The tool is a single HTML file: it runs entirely in your browser, needs no installation or internet
+     connection, and your data never leave your machine.</p>
+</div>
+
+<div class="panel" id="data">
+  <h2>2 &middot; Data inputs</h2>
+  <p>The tool accepts a single CSV (comma- or tab-separated) and <b>auto-detects</b> which of two layouts it is.
+     Values can be in any currency unit as long as it is the same throughout (the example is in $bn).</p>
+
+  <h3>Format A &mdash; bilateral-exposure matrix (preferred)</h3>
+  <p>Use this when you know who lent how much to whom. One row per bank: first column the bank name, then one column
+     <em>per bank</em> with the exposure <var>A<sub>ij</sub></var> of the row bank (lender <var>i</var>) to the
+     column bank (borrower <var>j</var>), then two final columns <code>external_assets</code> and
+     <code>equity</code>. The first rows of the bundled example:</p>
+  <div class="tblscroll">
+  <table class="ex">
+    <tr><th>bank</th><th>Citigroup</th><th>Bank of America</th><th>JPMorgan Chase</th><th>&hellip;</th><th>external_assets</th><th>equity</th></tr>
+    <tr><td>Citigroup</td><td>0.000</td><td>12.108</td><td>19.702</td><td>&hellip;</td><td>2097.37</td><td>116.58</td></tr>
+    <tr><td>Bank of America</td><td>12.415</td><td>0.000</td><td>29.050</td><td>&hellip;</td><td>1670.80</td><td>99.98</td></tr>
+    <tr><td>JPMorgan Chase</td><td>15.349</td><td>22.071</td><td>0.000</td><td>&hellip;</td><td>1854.33</td><td>91.78</td></tr>
+  </table></div>
+  <p class="note">Reading the first row: Citigroup has lent $12.1bn to Bank of America and $19.7bn to JPMorgan,
+     holds $2,097bn of external (non-bank) assets, and has $116.6bn of equity. The diagonal is zero (no
+     self-lending). The column headers between <code>bank</code> and <code>external_assets</code> must match the
+     row names exactly and in the same order &mdash; that is how the tool recognizes this format. A zero means
+     &ldquo;no exposure&rdquo;.</p>
+
+  <h3>Format B &mdash; aggregate balance sheets</h3>
+  <p>Use this when bilateral data are confidential and you only have totals. Exactly five columns:</p>
+  <div class="tblscroll">
+  <table class="ex">
+    <tr><th>bank</th><th>interbank_lending</th><th>interbank_borrowing</th><th>external_assets</th><th>equity</th></tr>
+    <tr><td>Citigroup</td><td>102.63</td><td>135.11</td><td>2097.37</td><td>116.58</td></tr>
+    <tr><td>Bank of America</td><td>129.20</td><td>141.73</td><td>1670.80</td><td>99.98</td></tr>
+    <tr><td>JPMorgan Chase</td><td>145.67</td><td>133.03</td><td>1854.33</td><td>91.78</td></tr>
+  </table></div>
+  <p>The tool reconstructs one deterministic bilateral matrix using separate lending and borrowing fitnesses, a
+     sparse binary support, and RAS, as described in
+     <a href="DebtRank_Methods.html#sec11">Method Description, Section 11</a>. If system-wide lending and borrowing
+     totals differ, borrowing is proportionally rescaled to equal lending. Re-loading the same file always gives the
+     same network.</p>
+  <div class="warnbox"><b>Caveat.</b> Bardoscia et&nbsp;al. (2015) sample an ensemble of random networks. This tool
+     deliberately keeps one reproducible topology and may add candidate links when a sparser support cannot match
+     both RAS margins. Format-B results are a reconstruction sensitivity case, not an estimate or bound for the
+     unknown true network.</div>
+  <p class="note">Both example files can be downloaded from panel 1 of the tool
+     (<kbd>Download example matrix CSV</kbd> / <kbd>Download example aggregate CSV</kbd>) and used as templates;
+     they are also bundled as <code>DebtRank_example_network.csv</code> and
+     <code>DebtRank_example_aggregate.csv</code>.</p>
+
+  <h3>Validation rules</h3>
+  <p>Equity must be a positive number for every bank (a bank with zero or negative equity has already failed &mdash;
+     remove it or replace equity with a small positive value). Bilateral matrix exposures must be non-negative;
+     negative entries are treated as zero. Aggregate lending and borrowing totals must be finite and non-negative;
+     invalid totals are rejected. Numbers must use a dot as the decimal separator, without thousands separators.</p>
+</div>
+
+<div class="panel" id="settings">
+  <h2>3 &middot; Scenario &amp; model settings (panel 2)</h2>
+  <table class="ref">
+    <tr><th style="width:26%">Control</th><th>What it does &amp; how to choose</th></tr>
+    <tr><td><b>Propagation algorithm</b></td>
+        <td><b>Linear DebtRank</b> (default): banks re-transmit every round they receive new distress &mdash; the
+            conservative, mark-to-market-consistent estimate. <b>Original DebtRank</b>: each bank transmits only the
+            first time it is hit &mdash; a lower bound. Run both to bracket the result.</td></tr>
+    <tr><td><b>Shock type</b></td>
+        <td><b>External-asset shock (all banks)</b>: a market-wide scenario &mdash; every bank loses &alpha;% of its
+            external assets. <b>External-asset shock (selected bank)</b>: an idiosyncratic hit to one institution.
+            <b>Default a single bank</b>: the Battiston (2012) thought experiment &mdash; one bank&rsquo;s equity is
+            wiped out (h=1) and the consequences are traced.</td></tr>
+    <tr><td><b>Shock size &alpha;</b></td>
+        <td>Percent of external assets destroyed in the first round. 1% is a meaningful recession-type shock for a
+            leveraged balance sheet; 0.1% probes near-linear behaviour; 5%+ is a severe crisis.</td></tr>
+    <tr><td><b>Include fire sales / &phi;</b></td>
+        <td>Adds a <b>simplified heuristic</b> common-asset channel. Surviving banks sell external assets in
+            proportion to their equity loss; &phi; maps aggregate sales into a fractional price drop. This is
+            inspired by Battiston et&nbsp;al. (2016), but it does not solve that paper&rsquo;s target-leverage
+            restoration equation. Treat &phi; as a scenario parameter, not a published calibration.</td></tr>
+  </table>
+</div>
+
+<div class="panel" id="walk">
+  <h2>4 &middot; Walkthrough with the bundled example</h2>
+  <p>The example is a synthetic but internally consistent network of 20 large global institutions circa 2008,
+     calibrated to a stable leverage regime. Follow along:</p>
+  <div class="step"><div class="stepnum">1</div><div>
+     <b>Load.</b> Click <kbd>Load bundled example</kbd>. The status line reports
+     <b>20 institutions &middot; 175 interbank links &middot; spectral radius |&lambda;<sub>max</sub>| = 0.900</b>
+     with a green &ldquo;stable regime&rdquo; pill: shocks will be damped, not explosive &mdash; but 0.9 is close to
+     1, so expect strong amplification. The balance-sheet preview lets you sanity-check the data.</div></div>
+  <div class="step"><div class="stepnum">2</div><div>
+     <b>Run.</b> Keep the defaults (linear DebtRank, external shock to all banks, &alpha; = 1%) and click
+     <kbd>Run stress test</kbd>. The run converges in about 39 rounds.</div></div>
+  <div class="step"><div class="stepnum">3</div><div>
+     <b>System results (panel 3).</b> The direct first-round loss is <b>16.2%</b> of system equity, but the final
+     global vulnerability is <b>H(T) &asymp; 70.7%</b> &mdash; a network amplification of <b>4.4&times;</b>, about
+     $1,301bn of the system&rsquo;s $1,839bn equity. <b>4 of 20</b> banks default (h = 1): Bank of America, JPMorgan
+     Chase, Wells Fargo, and Bear Stearns &mdash; the four with interbank leverage above 1.2.</div></div>
+  <div class="step"><div class="stepnum">4</div><div>
+     <b>Firm results (panel 4).</b> The impact ranking is headed by <b>Citigroup (0.374)</b>, <b>Barclays
+     (0.374)</b>, <b>RBS (0.355)</b> and <b>HSBC (0.346)</b>: each of their solo defaults would destroy roughly a
+     third of everyone else&rsquo;s equity. Note the two lists differ &mdash; the most <em>dangerous</em> banks (high
+     impact) are not the most <em>fragile</em> ones (the defaulters), because impact reflects how much others have
+     lent to you, while vulnerability reflects your own leverage. These rankings use the Battiston-style solo-default
+     impact and current-scenario vulnerability; they do not replicate Bardoscia et&nbsp;al. (2015, Fig.&nbsp;2).</div></div>
+  <div class="step"><div class="stepnum">5</div><div>
+     <b>Network diagram (panel 5).</b> With the default Kamada&ndash;Kawai layout the tightly interconnected core is
+     visible at the centre. Switch layouts (Section&nbsp;6) to view the same network from different angles, and use
+     <b>Max exposures drawn</b> to control clutter &mdash; it draws that many of the largest exposures (enter
+     <code>0</code> to draw them all). The note under the chart reports how many of the total exposures are
+     currently shown.</div></div>
+  <div class="step"><div class="stepnum">6</div><div>
+     <b>Monte-Carlo (panel 6).</b> Click <kbd>Run Monte-Carlo</kbd> with the defaults (2,000 trials, mean shock 1%,
+     95% level). The full-propagation loss distribution sits far to the right of the first-round-only one, and
+     VaR<sub>95</sub> roughly quadruples once network effects are included. (Results vary slightly run to run
+     &mdash; the draws are random.)</div></div>
+  <p class="note" style="margin-top:12px"><b>Your results are kept.</b> Once you have run a scenario you can follow
+     the links to this guide or the method description and return to the tool &mdash; the loaded data, your scenario
+     settings and all result panels are restored automatically, so you don&rsquo;t have to re-load and re-run. To
+     start over, just load a different data set.</p>
+</div>
+
+<div class="panel" id="panels">
+  <h2>5 &middot; Reading the results, panel by panel</h2>
+  <table class="ref">
+    <tr><th style="width:30%">Output</th><th>How to read it</th></tr>
+    <tr><td><b>KPI cards (panel 3)</b></td>
+        <td>H(T) = share of system equity destroyed; first-round loss = damage without the network; amplification =
+            their ratio (the &ldquo;network multiplier&rdquo;); defaults = banks with h = 1; spectral radius =
+            stability diagnostic (&lt; 1 damped, &gt; 1 explosive).</td></tr>
+    <tr><td><b>Distress propagation chart</b></td>
+        <td>H(t) round by round. A long flat tail means slow, grinding contagion; a steep early rise means the
+            damage is front-loaded. The gap between the first point and the plateau is the network&rsquo;s
+            contribution.</td></tr>
+    <tr><td><b>Loss decomposition bar</b></td>
+        <td>Splits H(T) into first round (direct), second round (interbank), and the simplified heuristic third-round
+            fire-sale scenario, if enabled. The second-round share is the headline argument for network-aware stress
+            testing.</td></tr>
+    <tr><td><b>Impact ranking</b></td>
+        <td>Each bank&rsquo;s Battiston-style default impact: the share of <em>other</em> banks&rsquo; equity its solo
+            default would destroy. This is not Bardoscia&rsquo;s single-bank external-asset-shock impact measure.</td></tr>
+    <tr><td><b>Vulnerability ranking</b></td>
+        <td>Each bank&rsquo;s own loss h(T) under the scenario you ran. Red bars are defaults. Bardoscia&rsquo;s Figure&nbsp;2
+            instead averages each bank&rsquo;s loss across a sequence of single-bank shock experiments.</td></tr>
+    <tr><td><b>Impact vs. vulnerability map</b></td>
+        <td>Upper-right quadrant (above both median guides) = high impact <em>and</em> high vulnerability:
+            &ldquo;too central to fail&rdquo;. Bubble size = total assets &mdash; note that big is not the same as
+            dangerous.</td></tr>
+    <tr><td><b>Network diagram</b></td>
+        <td>Node size &prop; total assets, colour &prop; DebtRank impact (blue &rarr; red), edge width &prop;
+            exposure size. The <b>Max exposures drawn</b> control sets how many of the largest exposures appear
+            (default 90; e.g. 80, 50; enter <code>0</code> to draw them all). This is purely about legibility
+            &mdash; it never changes the underlying DebtRank or contagion results. Five layouts available
+            (Section&nbsp;6).</td></tr>
+    <tr><td><b>VaR / CVaR panel</b></td>
+        <td>Blue histogram = first-round-only losses; red = full propagation. The rightward shift of the red VaR
+            line versus the blue is the extra capital a network-blind risk model would fail to provide.</td></tr>
+  </table>
+</div>
+
+<div class="panel" id="layouts">
+  <h2>6 &middot; Network-diagram layouts</h2>
+  <p>The layout changes only the <em>positions</em> of the nodes, never the data. Each emphasizes something
+     different:</p>
+  <table class="ref">
+    <tr><th style="width:30%">Layout</th><th>What it shows best</th></tr>
+    <tr><td><b>Kamada&ndash;Kawai</b> (default)</td>
+        <td>On-screen distances approximate shortest-path distances in the network. The best general-purpose
+            overview: central banks end up central, peripheral ones drift outward, and the core&ndash;periphery
+            shape is immediately visible.</td></tr>
+    <tr><td><b>Spring</b> (Fruchterman&ndash;Reingold)</td>
+        <td>Linked banks attract, all banks repel. Clusters of heavily interconnected institutions pull together
+            &mdash; useful for spotting sub-groups (e.g. a European cluster vs. a US cluster).</td></tr>
+    <tr><td><b>Circular</b></td>
+        <td>All banks on one ring, ordered clockwise from the top by DebtRank impact. Because positions are fixed
+            and neutral, the <em>edges</em> stand out &mdash; the cleanest view of who is exposed to whom, and ideal
+            for comparing two scenarios side by side.</td></tr>
+    <tr><td><b>Shell</b></td>
+        <td>Three concentric rings by DebtRank impact: inner ring = the most systemic ~20%, middle ring = next 30%,
+            outer ring = the rest. A tiered watch-list as a picture.</td></tr>
+    <tr><td><b>DebtRank spiral</b></td>
+        <td>The original Battiston et&nbsp;al. (2012, Fig.&nbsp;3) presentation: most systemic at the centre,
+            importance decreasing outward along a golden-angle spiral. Compact and good for ranking-focused
+            storytelling.</td></tr>
+  </table>
+  <p class="note">The Kamada&ndash;Kawai and spring layouts are computed from the link structure (deterministically,
+     so the picture is reproducible); circular, shell and spiral are computed from the DebtRank ranking.</p>
+</div>
+
+<div class="panel" id="owndata">
+  <h2>7 &middot; Preparing your own data</h2>
+  <p>A practical checklist:</p>
+  <div class="step"><div class="stepnum">1</div><div><b>Choose the format.</b> Bilateral exposures if you have them
+     (supervisory returns, large-exposure data); otherwise aggregates (Format B) from published balance sheets:
+     interbank/due-from-banks assets for lending, due-to-banks liabilities for borrowing.</div></div>
+  <div class="step"><div class="stepnum">2</div><div><b>One unit, one date.</b> All figures in the same currency and
+     unit, all from the same reporting date. Mixing $m and $bn is the most common silent error &mdash; the tool
+     cannot detect it.</div></div>
+  <div class="step"><div class="stepnum">3</div><div><b>Define equity consistently.</b> Common equity tier 1 or book
+     equity both work; just use the same definition for every bank. Smaller equity &rArr; higher leverage matrix
+     &rArr; more contagion, so the choice matters.</div></div>
+  <div class="step"><div class="stepnum">4</div><div><b>Check names.</b> In Format A the column headers must repeat
+     the row names exactly (same spelling, same order). Avoid commas inside names.</div></div>
+  <div class="step"><div class="stepnum">5</div><div><b>Sanity-check on load.</b> The preview table should reproduce
+     numbers you recognize; the spectral radius should typically be in the 0.3&ndash;1.2 range for a real system. A
+     value like 8 usually signals a unit error in equity.</div></div>
+  <div class="step"><div class="stepnum">6</div><div><b>Start small.</b> Run &alpha; = 0.1% first. In the stable
+     regime results scale roughly linearly in &alpha; until defaults appear; the &alpha; at which the first bank
+     defaults is itself a useful fragility statistic.</div></div>
+</div>
+
+<div class="panel" id="trouble">
+  <h2>8 &middot; Troubleshooting</h2>
+  <table class="ref">
+    <tr><th style="width:38%">Symptom</th><th>Cause &amp; fix</th></tr>
+    <tr><td><i>&ldquo;Could not find an &lsquo;equity&rsquo; column.&rdquo;</i></td>
+        <td>Header misspelled or missing. The column must be named exactly <code>equity</code> (case-insensitive);
+            same for <code>external_assets</code>, <code>interbank_lending</code>, <code>interbank_borrowing</code>.</td></tr>
+    <tr><td><i>&ldquo;Equity values must be positive numbers.&rdquo;</i></td>
+        <td>A zero, negative, or non-numeric equity entry (check for thousands separators or currency symbols).</td></tr>
+    <tr><td>File meant as a matrix is read as &ldquo;aggregate&rdquo; (or errors)</td>
+        <td>The matrix column headers do not match the row names exactly and in order. Fix spelling/order, or remove
+            stray spaces.</td></tr>
+    <tr><td>Spectral radius implausibly large</td>
+        <td>Almost always a unit mismatch: exposures in $m but equity in $bn (or vice versa).</td></tr>
+    <tr><td>Everything defaults at a tiny shock</td>
+        <td>Not necessarily a bug: if |&lambda;<sub>max</sub>| &gt; 1 the system is in the unstable regime and that
+            is the model&rsquo;s message. Verify units first, then read it as a finding.</td></tr>
+    <tr><td>Monte-Carlo slow</td>
+        <td>Cost scales with trials &times; banks&sup2;. Reduce trials to 1,000 for exploration; use 5,000+ only for
+            final numbers.</td></tr>
+  </table>
+</div>
+
+<div class="panel" id="python">
+  <h2>9 &middot; The Python companion tool</h2>
+  <p><code>debtrank_tool.py</code> replicates the version03 HTML tool from the command line (same deterministic
+     reconstruction, same CSVs, and the same stress-test calculations) and
+     produces a multi-panel PNG report &mdash; convenient for batch runs and papers. Requirements:
+     <code>numpy</code>, <code>matplotlib</code>.</p>
+<pre># default run: linear DebtRank, 1% shock to all banks, Kamada-Kawai diagram
+python debtrank_tool.py DebtRank_example_network.csv
+
+# original (2012) algorithm; default of a named bank
+python debtrank_tool.py data.csv --algo original --shock default --bank "Citigroup"
+
+# fire sales on; spring layout for the network diagram
+python debtrank_tool.py data.csv --fire-sales --phi 0.3 --layout spring
+
+# network-diagram layouts: kk (default) | spring | circular | shell | spiral
+python debtrank_tool.py data.csv --layout circular
+
+# how many exposures to draw (legibility only; results are unaffected):
+python debtrank_tool.py data.csv --max-edges 80         # draw 80 largest exposures (0 = all)
+
+# Monte-Carlo VaR/CVaR; console-only report
+python debtrank_tool.py data.csv --mc 2000 --mc-mean 1.0 --var-level 0.95 --no-plots</pre>
+  <p class="note">The figure is written to <code>debtrank_report.png</code> (override with <code>--out</code>).
+     The Monte-Carlo seed is fixed by default (<code>--seed</code>), so Python results are exactly reproducible.</p>
+</div>
+
+<div class="navbtns">
+  <a href="DebtRank_Systemic_Risk_Tool_v03.html">&larr; Back to the tool</a>
+  <a href="DebtRank_Methods.html">Method description &rarr;</a>
+</div>
+
+<div class="foot">
+   <b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> The DebtRank Systemic Risk Tool&mdash;including its HTML and Python
+   implementations&mdash;and its accompanying documentation are licensed under the
+   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives
+   4.0 International License (CC BY-NC-ND 4.0)</a>.<br>
+   The complete license terms and disclaimer applicable to these materials are provided in the
+   <a href="DebtRank_Systemic_Risk_Tool_v03.html#legal">tool&rsquo;s legal notice</a>.</div>
+</div>
+</body>
+</html>

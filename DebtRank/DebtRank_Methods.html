@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DebtRank &middot; Method Description</title>
+<style>
+:root{
+  --bg:#f4f6f8; --panel:#ffffff; --ink:#1d2733; --muted:#5b6b7b; --line:#dde3e9;
+  --accent:#1f5fa6; --accent2:#0d3a66; --pos:#c0392b; --neg:#2471a3; --warn:#b9770e;
+  --green:#2e8b57;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.62;font-size:15px}
+header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:22px 26px}
+header h1{margin:0;font-size:21px;font-weight:650}
+header p{margin:6px 0 0;font-size:13.5px;opacity:.9}
+nav.top{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+nav.top a{color:#fff;text-decoration:none;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;
+  font-size:12.5px;font-weight:600;border:1px solid rgba(255,255,255,.25)}
+nav.top a:hover{background:rgba(255,255,255,.3)}
+nav.top a.here{background:#fff;color:var(--accent2)}
+.wrap{max-width:880px;margin:0 auto;padding:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px 26px;margin-bottom:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.panel h2{margin:0 0 10px;font-size:18px;color:var(--accent2)}
+.panel h3{margin:18px 0 6px;font-size:15px;color:var(--accent2)}
+.eqn{background:#f7f9fb;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:12px 0;
+  overflow-x:auto;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:16.5px}
+.eqn .tag{float:right;color:var(--muted);font-size:12.5px;font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+.intuition{background:#f7faf7;border-left:3px solid #6aa84f;padding:10px 14px;font-size:13.5px;color:#33503a;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.intuition b:first-child{color:#2e6b3e}
+.keypoint{background:#f3f7fb;border-left:3px solid var(--accent);padding:10px 14px;font-size:13.5px;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.warnbox{background:#fef6e7;border-left:3px solid var(--warn);padding:10px 14px;font-size:13.5px;color:#6b4a00;
+  border-radius:0 6px 6px 0;margin:12px 0}
+.note{font-size:12.5px;color:var(--muted)}
+code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:12.5px}
+table.bs{border-collapse:collapse;margin:10px auto;font-size:13.5px}
+table.bs th,table.bs td{border:1px solid var(--line);padding:6px 14px;text-align:left}
+table.bs th{background:#f7f9fb;color:var(--muted);font-weight:600}
+table.ex{border-collapse:collapse;margin:10px 0;font-size:13px;width:100%}
+table.ex th,table.ex td{border:1px solid var(--line);padding:5px 10px;text-align:right}
+table.ex th{background:#f7f9fb;color:var(--muted);font-weight:600}
+table.ex td:first-child,table.ex th:first-child{text-align:left}
+.foot{color:var(--muted);font-size:12px;text-align:center;padding:8px 0 30px}
+.navbtns{display:flex;justify-content:space-between;gap:10px;margin:6px 0 26px}
+.navbtns a{background:var(--accent);color:#fff;text-decoration:none;border-radius:8px;padding:9px 16px;
+  font-size:13.5px;font-weight:600}
+.navbtns a:hover{background:var(--accent2)}
+var{font-family:Georgia,'Times New Roman',serif;font-style:italic}
+.toc{font-size:13.5px;columns:2;column-gap:30px}
+.toc a{color:var(--accent);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header>
+  <h1>DebtRank &middot; Method Description</h1>
+  <p>How the tool measures systemic risk in financial networks &mdash; the intuition first, the equations second</p>
+  <nav class="top">
+    <a href="DebtRank_Systemic_Risk_Tool_v03.html">Tool</a>
+    <a class="here" href="DebtRank_Methods.html">Method description</a>
+    <a href="DebtRank_Users_Guide.html">Users&rsquo; guide</a>
+  </nav>
+</header>
+<div class="wrap">
+
+<div class="panel">
+  <h2>Contents</h2>
+  <div class="toc">
+    <a href="#sec1">1 &middot; The question DebtRank answers</a><br>
+    <a href="#sec2">2 &middot; Balance sheets and notation</a><br>
+    <a href="#sec3">3 &middot; The leverage matrix</a><br>
+    <a href="#sec4">4 &middot; How distress propagates</a><br>
+    <a href="#sec5">5 &middot; Original vs. linear DebtRank</a><br>
+    <a href="#sec6">6 &middot; When do cascades die out?</a><br>
+    <a href="#sec7">7 &middot; System-level risk: H(t)</a><br>
+    <a href="#sec8">8 &middot; Firm-level risk: impact &amp; vulnerability</a><br>
+    <a href="#sec9">9 &middot; Three rounds of losses &amp; fire sales</a><br>
+    <a href="#sec10">10 &middot; Loss distributions, VaR and CVaR</a><br>
+    <a href="#sec11">11 &middot; Reconstructing a network from aggregates</a><br>
+    <a href="#sec12">12 &middot; References</a>
+  </div>
+</div>
+
+<div class="panel" id="sec1">
+  <h2>1 &middot; The question DebtRank answers</h2>
+  <p>Banks lend to one another. That is usually a good thing &mdash; it moves liquidity to where it is
+     needed &mdash; but it also means that one bank&rsquo;s problem can become every bank&rsquo;s problem.
+     If bank B loses money, then any bank A that has lent to B holds an asset that is now worth less, so
+     A loses money too, which hurts <em>A&rsquo;s</em> creditors, and so on. A shock travels through the
+     web of interbank exposures the way a rumor travels through a group of friends.</p>
+  <p>The question DebtRank answers is:</p>
+  <div class="keypoint"><b>How much of the banking system&rsquo;s total equity is ultimately destroyed by a shock,
+     once we account for all the rounds of contagion &mdash; not just the initial hit?</b></div>
+  <p>The answer is typically much larger than the direct loss. In the bundled 20-bank example, a shock that
+     directly destroys about 16% of system equity ends up destroying about 71% after propagation &mdash; an
+     amplification of more than 4&times;. Ignoring the network would understate risk by a factor of four.</p>
+  <div class="intuition"><b>Analogy.</b> Think of the multiplier in introductory macroeconomics: an initial change in
+     spending is amplified as it circulates through the economy. Here an initial equity loss is amplified as it
+     circulates through the interbank network. DebtRank computes that multiplier &mdash; and tells you which banks
+     contribute most to it.</div>
+</div>
+
+<div class="panel" id="sec2">
+  <h2>2 &middot; Balance sheets and notation</h2>
+  <p>Consider <var>n</var> banks, indexed <var>i</var> = 1, &hellip;, <var>n</var>. Each bank&rsquo;s balance sheet
+     has two kinds of assets:</p>
+  <table class="bs">
+    <tr><th>Assets</th><th>Liabilities &amp; equity</th></tr>
+    <tr><td>External assets <var>A<sup>E</sup><sub>i</sub></var><br>
+            <span class="note">loans to firms and households, securities, &hellip;</span></td>
+        <td>Liabilities <var>L<sub>i</sub></var><br>
+            <span class="note">deposits, debt, interbank borrowing</span></td></tr>
+    <tr><td>Interbank assets <var>&Sigma;<sub>j</sub> A<sub>ij</sub></var><br>
+            <span class="note">loans to other banks</span></td>
+        <td>Equity <var>E<sub>i</sub></var><br>
+            <span class="note">the owners&rsquo; buffer against losses</span></td></tr>
+  </table>
+  <p>The central object is the <b>exposure matrix</b> <var>A</var>: the entry <var>A<sub>ij</sub></var> is the amount
+     bank <var>i</var> (the lender) has lent to bank <var>j</var> (the borrower). If <var>j</var> gets into trouble,
+     it is <var>i</var> who is exposed and stands to lose.</p>
+  <p>Because equity is the buffer that absorbs losses, it is natural to track each bank&rsquo;s health by its
+     <b>relative equity loss</b>:</p>
+  <div class="eqn"><span class="tag">(1)</span>
+     <var>h<sub>i</sub></var>(<var>t</var>) &nbsp;=&nbsp;
+     [ <var>E<sub>i</sub></var>(0) &minus; <var>E<sub>i</sub></var>(<var>t</var>) ] &frasl; <var>E<sub>i</sub></var>(0)
+  </div>
+  <p><var>h<sub>i</sub></var>(<var>t</var>) is the fraction of bank <var>i</var>&rsquo;s initial equity that has been
+     wiped out by round <var>t</var> of the cascade. It runs from 0 (unharmed) to 1 (all equity gone &mdash; the bank
+     is in default). Everything in the tool &mdash; every chart, ranking, and risk measure &mdash; is built from these
+     <var>h<sub>i</sub></var>(<var>t</var>).</p>
+</div>
+
+<div class="panel" id="sec3">
+  <h2>3 &middot; The leverage matrix</h2>
+  <p>How much should bank <var>i</var> worry about bank <var>j</var>? The exposure <var>A<sub>ij</sub></var> alone
+     does not say: a $10bn exposure is existential for a small bank and a rounding error for a giant. What matters
+     is the exposure <em>relative to the lender&rsquo;s equity buffer</em>. This gives the
+     <b>interbank leverage matrix</b> (Bardoscia et&nbsp;al. 2015):</p>
+  <div class="eqn"><span class="tag">(2)</span>
+     &Lambda;<sub><var>ij</var></sub> &nbsp;=&nbsp; <var>A<sub>ij</sub></var> &frasl; <var>E<sub>i</sub></var>
+  </div>
+  <p>&Lambda;<sub><var>ij</var></sub> reads: &ldquo;for every dollar of equity bank <var>i</var> has, it has
+     &Lambda;<sub><var>ij</var></sub> dollars at risk with bank <var>j</var>.&rdquo;</p>
+  <div class="intuition"><b>A two-bank example.</b> Bank A has equity of 100 and has lent 50 to bank B, so
+     &Lambda;<sub>AB</sub> = 50/100 = 0.5. Suppose B loses 20% of its equity. Under the model&rsquo;s accounting,
+     A marks down its claim on B in proportion and loses 0.5 &times; 20% = 10% of its own equity. The leverage
+     matrix is exactly the set of &ldquo;pass-through&rdquo; coefficients of the contagion process.</div>
+  <p class="note">Why mark losses before default? Because a creditor&rsquo;s claim on a weakened borrower is genuinely
+     worth less today: the probability of being repaid in full has fallen. This mark-to-market view is what
+     distinguishes DebtRank from default-cascade models (e.g. Eisenberg&ndash;Noe), where losses occur only when a
+     borrower actually defaults &mdash; and it is why DebtRank detects fragility that default models miss.</p>
+</div>
+
+<div class="panel" id="sec4">
+  <h2>4 &middot; How distress propagates</h2>
+  <p>The dynamics is a simple recursion. In each round, every bank passes its <em>newly received</em> distress on to
+     its creditors, scaled by the leverage coefficients. The <b>linear DebtRank</b> rule
+     (Bardoscia et&nbsp;al. 2015) is:</p>
+  <div class="eqn"><span class="tag">(3)</span>
+     <var>h<sub>i</sub></var>(<var>t</var>+1) &nbsp;=&nbsp; min&#123; 1,&nbsp;
+     <var>h<sub>i</sub></var>(<var>t</var>) &nbsp;+&nbsp; &Sigma;<sub><var>j</var></sub>
+     &Lambda;<sub><var>ij</var></sub> [ <var>h<sub>j</sub></var>(<var>t</var>) &minus;
+     <var>h<sub>j</sub></var>(<var>t</var>&minus;1) ] &#125;
+  </div>
+  <p>Reading equation (3) term by term:</p>
+  <p><b><var>h<sub>i</sub></var>(<var>t</var>)</b> &mdash; the damage bank <var>i</var> has already suffered; losses
+     are never undone within the cascade.</p>
+  <p><b>&Lambda;<sub><var>ij</var></sub> [ <var>h<sub>j</sub></var>(<var>t</var>) &minus; <var>h<sub>j</sub></var>(<var>t</var>&minus;1) ]</b>
+     &mdash; the new loss bank <var>i</var> takes because borrower <var>j</var> got <em>worse this round</em>. Using the
+     <em>change</em> in <var>h<sub>j</sub></var> rather than its level is essential: it prevents the same dollar of
+     distress from being counted twice. Bank <var>i</var> has already marked down <var>j</var>&rsquo;s earlier losses;
+     only news moves the books.</p>
+  <p><b>min&#123;1, &middot;&#125;</b> &mdash; equity losses are capped at 100%: once a bank&rsquo;s equity is exhausted
+     it defaults, and limited liability means it cannot lose more than everything.</p>
+  <p>The cascade starts from an initial shock <var>h<sub>i</sub></var>(1) &mdash; for example, every bank losing
+     &alpha;% of its external assets, or one chosen bank defaulting outright &mdash; and equation (3) is iterated
+     until nothing changes any more.</p>
+</div>
+
+<div class="panel" id="sec5">
+  <h2>5 &middot; Original vs. linear DebtRank</h2>
+  <p>The tool offers two propagation rules, and the difference is one assumption: <em>how many times may a bank pass
+     distress on?</em></p>
+  <h3>Original DebtRank (Battiston et&nbsp;al. 2012)</h3>
+  <p>Each bank propagates distress <b>only once</b> &mdash; the first time it is hit. Formally, each bank is in one of
+     three states: <b>U</b>ndistressed, <b>D</b>istressed (just hit; will transmit this round), or <b>I</b>nactive
+     (already transmitted; absorbs further losses but passes nothing on). The motivation was to prevent shocks from
+     bouncing back and forth along cycles in the network (A hurts B, B hurts A, &hellip;) and inflating the count.</p>
+  <h3>Linear DebtRank (Bardoscia et&nbsp;al. 2015)</h3>
+  <p>Each bank propagates <b>every round in which it receives new distress</b>, per equation (3). Bardoscia
+     et&nbsp;al. show this is the rule consistent with period-by-period mark-to-market accounting; the
+     difference form in (3) already prevents double counting, so no once-only restriction is needed.</p>
+  <div class="keypoint"><b>Relationship.</b> The original rule shuts down transmission earlier, so it always yields
+     losses <em>no larger</em> than the linear rule: original DebtRank is a <b>lower bound</b>, linear DebtRank the
+     more conservative (higher) estimate. Running both brackets the truth. In the tool the linear rule is the
+     default.</div>
+</div>
+
+<div class="panel" id="sec6">
+  <h2>6 &middot; When do cascades die out?</h2>
+  <p>Will the recursion in (3) converge, or can a tiny shock snowball? Away from the min&#123;1,&middot;&#125; cap,
+     equation (3) says the vector of <em>new</em> losses each round equals &Lambda; times the previous round&rsquo;s
+     new losses. This is exactly like a first-order autoregression: in the AR(1) model
+     <var>y<sub>t</sub></var> = &beta;<var>y</var><sub><var>t</var>&minus;1</sub> + <var>u<sub>t</sub></var>,
+     shocks fade away when |&beta;| &lt; 1 and explode when |&beta;| &gt; 1. With a matrix instead of a scalar, the
+     role of |&beta;| is played by the <b>spectral radius</b> &mdash; the largest eigenvalue modulus
+     |&lambda;<sub>max</sub>(&Lambda;)|:</p>
+  <div class="eqn"><span class="tag">(4)</span>
+     |&lambda;<sub>max</sub>(&Lambda;)| &lt; 1 &nbsp;&rArr;&nbsp; shocks are damped (stable) &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+     |&lambda;<sub>max</sub>(&Lambda;)| &gt; 1 &nbsp;&rArr;&nbsp; shocks are amplified (unstable)
+  </div>
+  <p>In the unstable regime even an arbitrarily small shock grows each round until the min&#123;1,&middot;&#125; cap
+     binds &mdash; that is, until banks start defaulting. The spectral radius is therefore a one-number health check
+     for the whole network, and the tool reports it the moment data are loaded. The bundled example has
+     |&lambda;<sub>max</sub>| = 0.90: stable, but close enough to 1 that amplification is strong.</p>
+  <div class="intuition"><b>Policy reading.</b> The spectral radius rises with interbank leverage. Deleveraging,
+     higher capital (larger <var>E<sub>i</sub></var>), or smaller bilateral exposures all push
+     |&lambda;<sub>max</sub>| down &mdash; this is the model&rsquo;s formal case for capital regulation.</div>
+</div>
+
+<div class="panel" id="sec7">
+  <h2>7 &middot; System-level risk: the global vulnerability H(t)</h2>
+  <p>To summarize the whole system in one number, average the individual losses, weighting each bank by its share of
+     total equity:</p>
+  <div class="eqn"><span class="tag">(5)</span>
+     <var>H</var>(<var>t</var>) &nbsp;=&nbsp; &Sigma;<sub><var>i</var></sub>
+     ( <var>E<sub>i</sub></var> &frasl; &Sigma;<sub><var>j</var></sub> <var>E<sub>j</sub></var> )
+     <var>h<sub>i</sub></var>(<var>t</var>)
+  </div>
+  <p><var>H</var>(<var>t</var>) is the fraction of <em>system-wide</em> equity destroyed by round <var>t</var> &mdash;
+     like a capitalization-weighted index of damage. Two readings of the final value <var>H</var>(<var>T</var>):</p>
+  <p><b>Level:</b> <var>H</var>(<var>T</var>) = 0.71 means 71% of the banking system&rsquo;s equity is gone.
+     <b>Amplification:</b> the ratio <var>H</var>(<var>T</var>) &frasl; <var>H</var>(1) compares the final loss with
+     the direct first-round loss &mdash; the network multiplier of Section 1.</p>
+</div>
+
+<div class="panel" id="sec8">
+  <h2>8 &middot; Firm-level risk: impact and vulnerability</h2>
+  <p>Two different questions can be asked about each bank. This tool uses the default-impact and
+     scenario-vulnerability convention of Battiston et&nbsp;al. (2016), which is distinct from the
+     single-bank shock experiment used for Figure&nbsp;2 of Bardoscia et&nbsp;al. (2015).</p>
+  <h3>Impact &mdash; &ldquo;how dangerous is this bank to others?&rdquo;</h3>
+  <p>The <b>DebtRank of bank <var>i</var></b> is found by a thought experiment: set
+     <var>h<sub>i</sub></var>(1) = 1 (bank <var>i</var> alone defaults), run the cascade, and measure the equity loss
+     induced <em>in the rest of the system</em> (the seed bank&rsquo;s own equity is excluded, since destroying it is
+     not contagion):</p>
+  <div class="eqn"><span class="tag">(6)</span>
+     DR<sub><var>i</var></sub> &nbsp;=&nbsp; <var>H</var>(<var>T</var> | <var>h<sub>i</sub></var>(1)=1)
+     &nbsp;&minus;&nbsp; <var>E<sub>i</sub></var> &frasl; &Sigma;<sub><var>j</var></sub> <var>E<sub>j</sub></var>
+  </div>
+  <p>DR<sub><var>i</var></sub> = 0.37 reads: bank <var>i</var>&rsquo;s default would destroy 37% of everyone
+     else&rsquo;s equity. This is the measure behind the phrase <em>too central to fail</em>: in the original 2012
+     application, mid-sized but highly connected institutions ranked above some larger, less connected ones.</p>
+  <h3>Vulnerability &mdash; &ldquo;how dangerous are others to this bank?&rdquo;</h3>
+  <p>Bank <var>i</var>&rsquo;s <b>vulnerability</b> is simply its final loss <var>h<sub>i</sub></var>(<var>T</var>)
+     under the scenario you chose &mdash; how badly it is hurt when the shock hits everyone.</p>
+  <div class="intuition"><b>Relation to Bardoscia et&nbsp;al. (2015).</b> In that paper&rsquo;s Figure&nbsp;2
+     experiment, one bank at a time receives the same small external-asset shock. Its impact is the total system
+     loss in that experiment, while each bank&rsquo;s vulnerability is its average loss across all of the
+     single-bank experiments. The rankings displayed by this tool should therefore not be interpreted as a
+     replication of Bardoscia&rsquo;s Figure&nbsp;2.</div>
+  <div class="keypoint"><b>The impact&ndash;vulnerability map.</b> Plotting impact (x) against vulnerability (y)
+     splits banks into four groups. The upper-right quadrant &mdash; high impact <em>and</em> high vulnerability &mdash;
+     contains the institutions that both amplify and attract trouble: the natural priority list for supervisors.</div>
+</div>
+
+<div class="panel" id="sec9">
+  <h2>9 &middot; Three rounds of losses &amp; fire sales</h2>
+  <p>Following Battiston et&nbsp;al. (2016), the tool decomposes the total loss into three economically distinct
+     layers:</p>
+  <p><b>First round</b> &mdash; the direct shock: each bank&rsquo;s external assets fall by &alpha;%, so
+     <var>h<sub>i</sub></var>(1) = min&#123;1, &alpha;<var>A<sup>E</sup><sub>i</sub></var>&frasl;<var>E<sub>i</sub></var>&#125;.
+     This is what a stress test <em>without</em> a network would report.</p>
+  <p><b>Second round</b> &mdash; interbank contagion: everything added by iterating equation (3).</p>
+  <p><b>Third round (optional)</b> &mdash; <b>simplified fire sales</b>: the tool assumes that each surviving bank
+     sells a share of external assets proportional to its cumulative equity loss. Aggregate sales depress the
+     market price; with a linear market impact &phi;, the price drop is</p>
+  <div class="eqn"><span class="tag">(7)</span>
+     &Delta;<var>p</var>&frasl;<var>p</var> &nbsp;=&nbsp; &phi; &times; (assets sold) &frasl; (total external assets)
+  </div>
+  <p>and every bank still holding those assets marks them down, losing
+     &Delta;<var>p</var>&frasl;<var>p</var> &times; <var>A<sup>E</sup><sub>i</sub></var> &frasl; <var>E<sub>i</sub></var>
+     more equity. This channel needs no direct contractual link at all: two banks that have never traded with each
+     other are connected through the <em>prices of the assets they both hold</em>.</p>
+  <div class="warnbox"><b>Scope of the fire-sale extension.</b> This is a transparent heuristic inspired by the
+     third-round channel of Battiston et&nbsp;al. (2016). The published model derives each bank&rsquo;s sale fraction
+     from restoration of its initial leverage and applies the price shock to retained assets. The present tool does
+     not solve that target-leverage equation, so its third-round results are illustrative scenario outputs rather
+     than a replication of the paper&rsquo;s fire-sale calibration.</div>
+</div>
+
+<div class="panel" id="sec10">
+  <h2>10 &middot; Loss distributions, VaR and CVaR</h2>
+  <p>A single scenario gives a single number. To see the whole <em>distribution</em> of possible outcomes, the tool
+     runs a Monte-Carlo experiment: draw a random shock size &alpha; from a Beta distribution (always between 0 and
+     1, with a mean you choose), apply it to all banks, run the cascade, record <var>H</var>(<var>T</var>) &mdash;
+     and repeat thousands of times. Two summary statistics of the resulting loss distribution:</p>
+  <div class="eqn"><span class="tag">(8)</span>
+     VaR<sub>95</sub> &nbsp;=&nbsp; the loss not exceeded in 95% of trials &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+     CVaR<sub>95</sub> &nbsp;=&nbsp; the average loss in the worst 5% of trials
+  </div>
+  <p>VaR (Value-at-Risk) is a quantile &mdash; the same concept as a percentile in any distribution. CVaR
+     (conditional VaR, or expected shortfall) answers the follow-up question: <em>when</em> things are worse than the
+     VaR, how bad are they on average? CVaR is always at least as large as VaR and is more informative about tail
+     risk.</p>
+  <div class="keypoint"><b>The headline result.</b> Computing the distribution twice &mdash; once with first-round
+     losses only, once with full propagation &mdash; shows the network&rsquo;s signature: it shifts the entire loss
+     distribution, and especially its right tail, sharply rightward. A risk manager using the no-network VaR would be
+     severely underestimating capital needs.</div>
+</div>
+
+<div class="panel" id="sec11">
+  <h2>11 &middot; Reconstructing a network from aggregates</h2>
+  <p>Bilateral exposures <var>A<sub>ij</sub></var> are confidential almost everywhere; what is usually public is each
+     bank&rsquo;s <em>total</em> interbank lending and borrowing. The tool constructs one deterministic, reproducible
+     bilateral approximation from these totals:</p>
+  <p><b>Step 0 &mdash; balance the margins.</b> A closed interbank system must have equal total lending and
+     borrowing. If the uploaded totals differ, borrowing is rescaled proportionally to equal total lending, following
+     the adjustment described by Bardoscia et&nbsp;al. (2015). The tool rejects margins that cannot be represented
+     without self-exposures.</p>
+  <p><b>Step 1 &mdash; directed fitnesses and a binary topology.</b> Lending fitness
+     <var>x<sup>out</sup><sub>i</sub></var> and borrowing fitness
+     <var>x<sup>in</sup><sub>j</sub></var> are computed separately. Candidate links are ranked by the directed
+     Bardoscia probability
+     <var>p<sub>ij</sub></var> = <var>z x<sup>out</sup><sub>i</sub> x<sup>in</sup><sub>j</sub></var> /
+     (1 + <var>z x<sup>out</sup><sub>i</sub> x<sup>in</sup><sub>j</sub></var>). The highest-probability links
+     form a deterministic binary support. The base density is 5%; for small systems the tool applies an average-degree
+     floor of three so that the network is not mechanically too sparse.</p>
+  <p><b>Step 2 &mdash; RAS (how large is each link).</b> Starting on the selected support, rows and columns are
+     alternately rescaled to match lending and adjusted borrowing. If the sparse support cannot reproduce both
+     margins, the next-highest-probability links are added until RAS converges.</p>
+  <div class="intuition"><b>Analogy.</b> RAS is the iterative proportional fitting used to fill in a contingency
+     table when only its row and column totals are known. The result is the matrix consistent with the observed
+     totals that stays as close as possible to the seed&rsquo;s structure.</div>
+  <div class="warnbox"><b>Retained simplifying assumption.</b> Bardoscia et&nbsp;al. sample many random binary
+     networks and summarize results across that ensemble. This tool intentionally keeps one deterministic topology
+     so the HTML and Python versions are reproducible and directly comparable. It is therefore a fitness-informed
+     approximation, not a complete replication of the paper&rsquo;s reconstruction experiment.</div>
+  <p class="note">Reconstruction adds model risk: the true network may be more or less concentrated than the
+     deterministic approximation. Treat Format-B results as a sensitivity case, not as a bound.</p>
+</div>
+
+<div class="panel" id="sec12">
+  <h2>12 &middot; References</h2>
+  <p class="note" style="font-size:13px">
+     Battiston, S., M. Puliga, R. Kaushik, P. Tasca &amp; G. Caldarelli (2012), &ldquo;DebtRank: Too Central to Fail?
+     Financial Networks, the FED and Systemic Risk&rdquo;, <i>Scientific Reports</i> 2:541.<br><br>
+     Bardoscia, M., S. Battiston, F. Caccioli &amp; G. Caldarelli (2015), &ldquo;DebtRank: A Microscopic Foundation
+     for Shock Propagation&rdquo;, <i>PLoS ONE</i> 10(6): e0130406.<br><br>
+     Battiston, S., G. Caldarelli, M. D&rsquo;Errico &amp; S. Gurciullo (2016), &ldquo;Leveraging the Network: A
+     Stress-Test Framework Based on DebtRank&rdquo;, <i>Statistics &amp; Risk Modeling</i> 33(3&ndash;4); SSRN 2571218.<br><br>
+     For background at the level of this page: Stock, J. &amp; M. Watson, <i>Introduction to Econometrics</i>
+     (AR models, stationarity, quantiles); any intermediate text covering bank balance sheets.</p>
+</div>
+
+<div class="navbtns">
+  <a href="DebtRank_Systemic_Risk_Tool_v03.html">&larr; Back to the tool</a>
+  <a href="DebtRank_Users_Guide.html">Users&rsquo; guide &rarr;</a>
+</div>
+
+<div class="foot">
+   <b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> The DebtRank Systemic Risk Tool&mdash;including its HTML and Python
+   implementations&mdash;and its accompanying documentation are licensed under the
+   <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives
+   4.0 International License (CC BY-NC-ND 4.0)</a>.<br>
+   The complete license terms and disclaimer applicable to these materials are provided in the
+   <a href="DebtRank_Systemic_Risk_Tool_v03.html#legal">tool&rsquo;s legal notice</a>.</div>
+</div>
+</body>
+</html>

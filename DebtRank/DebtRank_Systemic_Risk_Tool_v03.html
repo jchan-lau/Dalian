@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DebtRank Systemic Risk Tool</title>
+<style>
+:root{
+  --bg:#f4f6f8; --panel:#ffffff; --ink:#1d2733; --muted:#5b6b7b; --line:#dde3e9;
+  --accent:#1f5fa6; --accent2:#0d3a66; --pos:#c0392b; --neg:#2471a3; --warn:#b9770e;
+  --green:#2e8b57;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px}
+header{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;padding:22px 26px}
+header h1{margin:0;font-size:21px;font-weight:650}
+header p{margin:6px 0 0;font-size:13.5px;opacity:.9}
+.wrap{max-width:1180px;margin:0 auto;padding:22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.panel h2{margin:0 0 4px;font-size:17px}
+.panel h3{margin:18px 0 6px;font-size:15px;color:var(--accent2)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.controls{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl label{font-size:12px;color:var(--muted);font-weight:600}
+.ctl input,.ctl select{padding:7px 9px;border:1px solid var(--line);border-radius:7px;font-size:14px;min-width:80px}
+button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:14px;
+  font-weight:600;cursor:pointer}
+button:hover{background:var(--accent2)}
+button.sec{background:#eaf0f6;color:var(--accent2)}
+button.sec:hover{background:#dbe6f1}
+.row{display:flex;flex-wrap:wrap;gap:20px}
+.col{flex:1;min-width:440px}
+.note{font-size:12.5px;color:var(--muted)}
+.msg{padding:10px 12px;border-radius:7px;font-size:13.5px;margin-top:10px}
+.msg.err{background:#fdecea;color:#922}
+.msg.ok{background:#eaf6ec;color:#256029}
+.msg.warn{background:#fef6e7;color:#8a5a00}
+table.cm{border-collapse:collapse;font-size:11.5px;width:100%}
+table.cm th,table.cm td{border:1px solid #eef2f6;padding:3px 5px;text-align:right;white-space:nowrap}
+table.cm th{background:#f7f9fb;font-weight:600;color:var(--muted)}
+table.cm td.name,table.cm th.name{text-align:left;font-weight:600;background:#f7f9fb;position:sticky;left:0}
+.tblscroll{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:8px}
+table.rk{border-collapse:collapse;width:100%;font-size:13px}
+table.rk th,table.rk td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right}
+table.rk th{color:var(--muted);font-weight:600;font-size:12px}
+table.rk td.name,table.rk th.name{text-align:left;font-weight:600}
+table.rk td.bar{width:38%}
+.barbg{background:#eef2f6;border-radius:4px;height:13px;width:100%}
+.barfill{height:13px;border-radius:4px}
+svg{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:8px}
+.legend{font-size:12px;color:var(--muted);margin-top:6px}
+.tag{display:inline-block;background:#eaf0f6;color:var(--accent2);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600;margin-right:6px}
+.kpi{display:inline-block;background:#f3f7fb;border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:4px 8px 4px 0;vertical-align:top}
+.kpi .lab{font-size:11px;color:var(--muted);display:block}
+.kpi b{font-size:20px;color:var(--accent2)}
+.intuition{background:#f7faf7;border-left:3px solid #6aa84f;padding:8px 12px;font-size:12.5px;color:#33503a;border-radius:0 6px 6px 0;margin:6px 0 12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px}
+details{margin-top:8px}summary{cursor:pointer;font-weight:600;color:var(--accent2)}
+.hidden{display:none}
+.foot{color:var(--muted);font-size:12px;text-align:center;padding:8px 0 30px}
+.foot.legal{max-width:1000px;margin:0 auto;text-align:left;line-height:1.55}
+.foot.legal p{margin:0 0 10px}
+input[type=range]{min-width:160px}
+code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:12.5px}
+.eqn{background:#f7f9fb;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13px;margin:8px 0;overflow-x:auto}
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:700;color:#fff}
+nav.top{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+nav.top a{color:#fff;text-decoration:none;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;
+  font-size:12.5px;font-weight:600;border:1px solid rgba(255,255,255,.25)}
+nav.top a:hover{background:rgba(255,255,255,.3)}
+nav.top a.here{background:#fff;color:var(--accent2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>DebtRank &middot; Systemic Risk in Financial Networks</h1>
+  <p>Based on the DebtRank framework of Battiston et&nbsp;al. (2012), Bardoscia et&nbsp;al. (2015), and Battiston et&nbsp;al. (2016)</p>
+  <nav class="top">
+    <a class="here" href="DebtRank_Systemic_Risk_Tool_v03.html">Tool</a>
+    <a href="DebtRank_Methods.html">Method description</a>
+    <a href="DebtRank_Users_Guide.html">Users&rsquo; guide</a>
+  </nav>
+</header>
+<div class="wrap">
+
+<div class="panel">
+  <h2>1 &middot; Data</h2>
+  <p class="sub">Provide an interbank financial network. Two CSV layouts are auto-detected:</p>
+  <ul class="note" style="margin-top:0">
+    <li><b>Bilateral-exposure matrix</b> &mdash; first column = bank name; then one column per bank giving
+        the exposure <code>A<sub>ij</sub></code> of lender&nbsp;<i>i</i> (row) to borrower&nbsp;<i>j</i> (column);
+        plus two columns <code>external_assets</code> and <code>equity</code>.</li>
+    <li><b>Aggregate balance sheets</b> &mdash; columns <code>bank, interbank_lending, interbank_borrowing,
+        external_assets, equity</code>. The tool builds one deterministic sparse directed-fitness topology and
+        uses RAS (iterative proportional fitting) to match the aggregate margins. This is a reproducible
+        approximation inspired by Bardoscia et&nbsp;al. (2015), not their stochastic network ensemble.</li>
+  </ul>
+  <div class="controls">
+    <div class="ctl"><label>Upload CSV</label><input type="file" id="file" accept=".csv,.tsv,.txt"></div>
+    <button class="sec" id="loadExample">Load bundled example (20 global banks)</button>
+    <button class="sec" id="dlMatrix">Download example matrix CSV</button>
+    <button class="sec" id="dlAgg">Download example aggregate CSV</button>
+  </div>
+  <div id="dataMsg"></div>
+  <div id="dataPreview"></div>
+</div>
+
+<div class="panel hidden" id="cfgPanel">
+  <h2>2 &middot; Stress scenario &amp; model settings</h2>
+  <div class="controls">
+    <div class="ctl"><label>Propagation algorithm</label>
+      <select id="algo">
+        <option value="linear">Linear DebtRank &mdash; Bardoscia 2015 (keeps propagating)</option>
+        <option value="original">Original DebtRank &mdash; Battiston 2012 (propagate once)</option>
+      </select></div>
+    <div class="ctl"><label>Shock type</label>
+      <select id="shockType">
+        <option value="external">External-asset shock (all banks)</option>
+        <option value="externalSel">External-asset shock (selected bank)</option>
+        <option value="default">Default a single bank (y=1)</option>
+      </select></div>
+    <div class="ctl" id="alphaWrap"><label>Shock size &alpha; (% of external assets)</label>
+      <input type="number" id="alpha" value="1.0" min="0" max="100" step="0.1"></div>
+    <div class="ctl hidden" id="bankWrap"><label>Bank to shock</label><select id="bankSel"></select></div>
+    <button id="run">Run stress test</button>
+  </div>
+  <h3 style="margin-top:18px">Simplified third-round fire-sale scenario</h3>
+  <div class="controls">
+    <div class="ctl"><label>Include fire sales</label>
+      <select id="fire"><option value="no">No</option><option value="yes">Yes</option></select></div>
+    <div class="ctl"><label>Market-impact &phi; (price drop per unit sold / assets)</label>
+      <input type="number" id="phi" value="0.30" min="0" max="2" step="0.05"></div>
+  </div>
+  <div id="runMsg"></div>
+  <p class="note">The optional fire-sale calculation is a transparent heuristic extension inspired by the
+     third-round channel in Battiston et&nbsp;al. (2016). It assumes asset sales proportional to each surviving
+     bank&rsquo;s equity loss; it does not solve the paper&rsquo;s target-leverage restoration equation.</p>
+  <p class="note" style="margin-top:10px">The <b>linear</b> dynamics lets every bank keep passing on distress as long as it
+     keeps receiving it; the <b>original</b> dynamics lets each bank propagate only the first time it is hit. The original
+     value is a lower bound for the linear one (Bardoscia et&nbsp;al. 2015).</p>
+</div>
+
+<div class="panel hidden" id="sysPanel">
+  <h2>3 &middot; System-level systemic risk</h2>
+  <div id="kpis"></div>
+  <div class="intuition" id="sysIntuition"></div>
+  <div class="grid2">
+    <div>
+      <h3>Distress propagation over rounds</h3>
+      <div id="convChart"></div>
+      <div class="legend">Global vulnerability <i>H(t)</i> = equity-weighted average loss. The shock is injected at round&nbsp;1;
+        rounds&nbsp;2+ are the network amplification.</div>
+    </div>
+    <div>
+      <h3>Loss decomposition by round</h3>
+      <div id="roundChart"></div>
+      <div class="legend">First round = direct shock on external assets. Second round = interbank distress propagation.
+        Third round = simplified heuristic fire-sale losses (if enabled).</div>
+    </div>
+  </div>
+</div>
+
+<div class="panel hidden" id="firmPanel">
+  <h2>4 &middot; Firm-level systemic risk</h2>
+  <p class="sub">Two complementary scenario measures, using the Battiston et&nbsp;al. (2016)/original-DebtRank
+    convention:
+    <b>impact</b> = relative system-wide equity loss its own default would induce (its DebtRank);
+    <b>vulnerability</b> = relative equity loss it suffers under the chosen scenario. These are not the
+    single-bank external-asset-shock impact and cross-experiment average vulnerability used in Bardoscia
+    et&nbsp;al. (2015, Fig.&nbsp;2).</p>
+  <div class="grid2">
+    <div>
+      <h3>Systemic default-impact ranking (DebtRank)</h3>
+      <div id="impactRank"></div>
+    </div>
+    <div>
+      <h3>Vulnerability ranking (this scenario)</h3>
+      <div id="vulnRank"></div>
+    </div>
+  </div>
+  <h3>Impact vs. vulnerability map</h3>
+  <div id="scatter"></div>
+  <div class="legend">Upper-right quadrant = banks that are both systemically important <i>and</i> fragile &mdash;
+    the "too-central-to-fail" institutions that most warrant supervisory attention.</div>
+</div>
+
+<div class="panel hidden" id="netPanel">
+  <h2>5 &middot; Network &amp; DebtRank diagram</h2>
+  <p class="sub">Node size &prop; total assets; colour &prop; DebtRank impact; edge width &prop; exposure size.
+     Choose how many exposures to draw, and the layout that best reveals the structure.</p>
+  <div class="controls" style="margin-bottom:10px">
+    <div class="ctl"><label>Layout</label>
+      <select id="netLayout">
+        <option value="kk" selected>Kamada&ndash;Kawai (default)</option>
+        <option value="spring">Spring (Fruchterman&ndash;Reingold)</option>
+        <option value="circular">Circular</option>
+        <option value="shell">Shell (by DebtRank)</option>
+        <option value="spiral">DebtRank spiral (Battiston 2012)</option>
+      </select></div>
+    <div class="ctl"><label>Max exposures drawn (0 = all)</label>
+      <input id="netMaxEdges" type="number" min="0" step="1" value="90" style="width:90px"></div>
+  </div>
+  <div id="netChart"></div>
+  <p class="note" id="netLayoutNote"></p>
+</div>
+
+<div class="panel hidden" id="varPanel">
+  <h2>6 &middot; Loss distribution &mdash; VaR &amp; CVaR</h2>
+  <p class="sub">Monte-Carlo over random systemic shocks (shock size drawn from a Beta distribution), comparing
+     first-round-only losses with full network propagation. Network effects shift the loss distribution &mdash; and the
+     Value-at-Risk &mdash; sharply to the right (Battiston et&nbsp;al. 2016).</p>
+  <div class="controls">
+    <div class="ctl"><label>Monte-Carlo trials</label><input type="number" id="mcN" value="2000" min="200" max="20000" step="200"></div>
+    <div class="ctl"><label>VaR / CVaR level</label>
+      <select id="varLevel"><option value="0.95">95%</option><option value="0.99">99%</option><option value="0.90">90%</option></select></div>
+    <div class="ctl"><label>Mean shock size (%)</label><input type="number" id="mcMean" value="1.0" min="0.1" max="20" step="0.1"></div>
+    <button id="runMC">Run Monte-Carlo</button>
+  </div>
+  <div id="varKpis" style="margin-top:12px"></div>
+  <div id="varChart"></div>
+</div>
+
+<div class="foot legal" id="legal">
+  <p>See the <a href="DebtRank_Users_Guide.html">User&rsquo;s Guide</a> and
+     <a href="DebtRank_Methods.html">Method Description</a> for methodology and references.</p>
+  <p><b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> The DebtRank Systemic Risk Tool&mdash;including its HTML and Python
+     implementations&mdash;and its accompanying documentation are licensed under the
+     <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons
+     Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)</a>.</p>
+  <p><b>Disclaimer:</b> This analytical calculator is provided &ldquo;as is&rdquo; solely for educational and research
+     purposes. It does not constitute financial, investment, legal, regulatory, or other professional advice. The author
+     makes no warranties, express or implied, regarding its accuracy, completeness, reliability, or fitness for any
+     particular purpose. To the fullest extent permitted by applicable law, the author shall not be liable for any direct,
+     indirect, incidental, special, consequential, or other damages or financial losses arising from its use or reliance
+     on its outputs. Users are responsible for independently validating all calculations and results.</p>
+  <p>The views and interpretations reflected in this tool are solely those of the author. Use of the tool in a course,
+     workshop, training program, or other institutional setting does not imply endorsement by, affiliation with, or
+     responsibility on the part of any employer, host, sponsor, course provider, or other organization.</p>
+</div>
+</div>
+
+<script id="exampleData" type="text/plain">bank,Citigroup,Bank of America,JPMorgan Chase,Morgan Stanley,Goldman Sachs,Merrill Lynch,Wachovia,Wells Fargo,Lehman Brothers,Bear Stearns,Barclays,RBS,UBS,Credit Suisse,Deutsche Bank,BNP Paribas,Societe Generale,HSBC,Dexia,Commerzbank,external_assets,equity
+Citigroup,0.000,12.108,19.702,0.000,0.000,3.917,2.076,4.446,3.198,1.501,8.777,6.153,4.940,5.748,6.500,12.102,0.000,8.781,0.000,2.684,2097.37,116.58
+Bank of America,12.415,0.000,29.050,0.000,8.139,5.776,3.060,6.555,4.716,2.214,12.942,0.000,0.000,0.000,9.583,17.844,0.000,12.947,0.000,3.958,1670.80,99.98
+JPMorgan Chase,15.349,22.071,0.000,7.661,10.062,7.140,0.000,8.104,0.000,0.000,15.999,11.215,9.005,10.478,11.848,0.000,4.455,0.000,7.386,4.893,1854.33,91.78
+Morgan Stanley,8.151,11.722,19.073,0.000,0.000,3.792,0.000,4.304,0.000,1.453,8.497,5.956,0.000,0.000,0.000,0.000,2.366,0.000,0.000,0.000,984.69,74.56
+Goldman Sachs,6.531,9.392,15.281,3.260,0.000,3.038,1.610,3.448,0.000,0.000,6.808,0.000,3.832,0.000,0.000,0.000,0.000,6.811,0.000,2.082,1037.91,81.48
+Merrill Lynch,5.063,7.281,0.000,2.527,3.319,0.000,0.000,2.673,1.923,0.903,5.278,3.700,0.000,3.457,3.908,0.000,0.000,0.000,0.000,0.000,859.97,67.43
+Wachovia,6.646,9.557,0.000,0.000,4.357,3.092,0.000,3.509,2.524,1.185,0.000,4.856,0.000,0.000,0.000,9.552,0.000,0.000,0.000,0.000,754.72,54.58
+Wells Fargo,9.114,13.105,21.324,4.549,0.000,4.240,0.000,0.000,3.462,0.000,9.500,0.000,0.000,6.222,0.000,0.000,0.000,9.504,4.385,0.000,1214.60,62.64
+Lehman Brothers,3.306,4.754,7.735,0.000,2.167,0.000,0.815,0.000,0.000,0.589,0.000,2.416,0.000,0.000,0.000,4.751,0.000,3.448,0.000,0.000,610.02,33.34
+Bear Stearns,2.687,3.864,6.288,1.341,1.762,0.000,0.662,1.419,1.021,0.000,2.801,0.000,0.000,1.835,0.000,0.000,0.000,0.000,0.000,0.857,375.46,18.02
+Barclays,18.676,26.856,0.000,9.322,0.000,8.688,4.604,9.860,7.094,3.330,0.000,13.646,10.957,0.000,0.000,0.000,0.000,19.476,0.000,0.000,2167.49,168.23
+RBS,17.949,0.000,0.000,0.000,11.767,8.350,4.424,0.000,6.817,0.000,18.710,0.000,0.000,0.000,0.000,0.000,5.210,18.718,0.000,0.000,3408.05,163.23
+UBS,0.000,0.000,0.000,27.555,0.000,0.000,13.608,0.000,0.000,0.000,0.000,40.339,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,1918.50,141.93
+Credit Suisse,0.000,0.000,0.000,9.525,0.000,8.877,0.000,0.000,0.000,3.402,19.892,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,1058.30,60.00
+Deutsche Bank,7.367,10.594,0.000,0.000,0.000,3.427,1.816,0.000,0.000,1.314,0.000,5.383,0.000,0.000,0.000,10.588,0.000,7.683,3.545,0.000,2148.28,158.38
+BNP Paribas,21.858,0.000,0.000,10.910,0.000,0.000,0.000,11.541,8.302,3.897,0.000,0.000,0.000,14.922,0.000,0.000,0.000,0.000,0.000,0.000,2428.57,116.78
+Societe Generale,0.000,0.000,14.574,0.000,0.000,0.000,0.000,0.000,0.000,0.000,6.493,4.551,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,1474.38,106.18
+HSBC,0.000,0.000,0.000,0.000,16.219,0.000,6.099,13.063,0.000,4.411,0.000,18.078,14.515,0.000,0.000,0.000,7.181,0.000,11.905,0.000,2308.53,141.49
+Dexia,0.000,0.000,0.000,3.340,0.000,3.113,0.000,0.000,0.000,1.193,0.000,0.000,0.000,0.000,5.165,0.000,1.942,6.978,0.000,2.133,626.14,38.73
+Commerzbank,0.000,10.422,0.000,0.000,0.000,3.371,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,5.594,10.416,0.000,0.000,0.000,0.000,820.20,43.51</script>
+<script>
+/* ============================================================= *
+ *  DebtRank core  --  pure functions, no DOM                    *
+ * ============================================================= */
+const DR = (function(){
+  "use strict";
+
+  // ---- CSV parsing ----
+  function parseCSV(text){
+    const lines = text.replace(/\r/g,"").split("\n").filter(l=>l.trim().length>0);
+    const delim = (lines[0].match(/\t/)) ? "\t" : ",";
+    const header = lines[0].split(delim).map(s=>s.trim());
+    const rows = lines.slice(1).map(l=>l.split(delim).map(s=>s.trim()));
+    return {header, rows};
+  }
+
+  // ---- Detect layout and build the network object ----
+  // returns {names, A (NxN), AE, E, ib_lending, ib_borrowing, reconstructed:bool}
+  function buildNetwork(text){
+    const {header, rows} = parseCSV(text);
+    const h = header.map(s=>s.toLowerCase());
+    const names = rows.map(r=>r[0]);
+    const N = names.length;
+    const idx = name => h.indexOf(name);
+
+    const hasMatrix = (()=>{ // are columns 1..N exactly the bank names?
+      if(header.length < N+1) return false;
+      for(let j=0;j<N;j++){ if((header[j+1]||"").trim() !== names[j]) return false; }
+      return true;
+    })();
+
+    const colE = idx("equity");
+    const colAE = idx("external_assets");
+    if(colE<0) throw new Error("Could not find an 'equity' column.");
+
+    const E  = rows.map(r=>Number(r[colE]));
+    if(E.some(v=>!isFinite(v) || v<=0)) throw new Error("Equity values must be positive numbers.");
+
+    if(hasMatrix){
+      if(colAE<0) throw new Error("Matrix layout needs an 'external_assets' column.");
+      const A = rows.map(r=>{
+        const row=[]; for(let j=0;j<N;j++){ const v=Number(r[j+1]); row.push(isFinite(v)?Math.max(0,v):0); }
+        return row;
+      });
+      const AE = rows.map(r=>Number(r[colAE]));
+      const ib_lending  = A.map(row=>row.reduce((a,b)=>a+b,0));
+      const ib_borrowing= A[0].map((_,j)=>A.reduce((a,row)=>a+row[j],0));
+      return {names, A, AE, E, ib_lending, ib_borrowing, reconstructed:false,
+              reconstructionInfo:null};
+    } else {
+      const cL = idx("interbank_lending"), cB = idx("interbank_borrowing");
+      if(cL<0||cB<0||colAE<0)
+        throw new Error("Aggregate layout needs columns: interbank_lending, interbank_borrowing, external_assets, equity.");
+      const ib_lending   = rows.map(r=>Number(r[cL]));
+      const ib_borrowing = rows.map(r=>Number(r[cB]));
+      if(ib_lending.some(v=>!isFinite(v)||v<0) || ib_borrowing.some(v=>!isFinite(v)||v<0))
+        throw new Error("Interbank lending and borrowing must be finite, non-negative numbers.");
+      const AE = rows.map(r=>Number(r[colAE]));
+      const rec = reconstruct(ib_lending, ib_borrowing);
+      return {names, A:rec.A, AE, E, ib_lending,
+              ib_borrowing:rec.borrowAdjusted, reconstructed:true,
+              reconstructionInfo:rec.info};
+    }
+  }
+
+  // ---- Deterministic directed-fitness topology + RAS weight fitting ----
+  // This keeps one reproducible reconstruction rather than sampling the paper's
+  // network ensemble. Separate lending/borrowing fitnesses and a binary support
+  // follow Bardoscia's reconstruction logic; the support is densified only if
+  // necessary for RAS to match both margins.
+  function reconstruct(lend, borrow, opt){
+    opt=opt||{};
+    const baseDensity = opt.baseDensity==null ? 0.05 : Number(opt.baseDensity);
+    const minDegree = opt.minDegree==null ? 3 : Number(opt.minDegree);
+    const maxit = opt.maxit||10000, tol = opt.tol||1e-9;
+    const N=lend.length;
+    if(borrow.length!==N) throw new Error("Lending and borrowing totals must have equal length.");
+    if(lend.some(v=>!isFinite(v)||v<0) || borrow.some(v=>!isFinite(v)||v<0))
+      throw new Error("Interbank lending and borrowing must be finite, non-negative numbers.");
+
+    const totalLend=lend.reduce((a,b)=>a+b,0);
+    const totalBorrow=borrow.reduce((a,b)=>a+b,0);
+    if(totalLend===0 && totalBorrow===0){
+      const A=Array.from({length:N},()=>new Array(N).fill(0));
+      return {A, borrowAdjusted:borrow.slice(), info:{borrowScale:1,baseDensity,
+        targetDensity:0,initialLinks:0,links:0,density:0,rasIterations:0,marginError:0}};
+    }
+    if(totalLend<=0 || totalBorrow<=0)
+      throw new Error("Total interbank lending and borrowing must both be positive.");
+
+    const borrowScale=totalLend/totalBorrow;
+    const borrowAdjusted=borrow.map(v=>v*borrowScale);
+    const feasibleTol=tol*Math.max(1,totalLend);
+    for(let i=0;i<N;i++){
+      if(lend[i] > totalLend-borrowAdjusted[i]+feasibleTol)
+        throw new Error(`No zero-diagonal network can allocate lending for bank ${i}: its lending exceeds all other banks' adjusted borrowing.`);
+      if(borrowAdjusted[i] > totalLend-lend[i]+feasibleTol)
+        throw new Error(`No zero-diagonal network can allocate borrowing for bank ${i}: its adjusted borrowing exceeds all other banks' lending.`);
+    }
+
+    const xOut=lend.map(v=>v/totalLend), xIn=borrowAdjusted.map(v=>v/totalLend);
+    const candidates=[];
+    for(let i=0;i<N;i++) for(let j=0;j<N;j++)
+      if(i!==j && lend[i]>0 && borrowAdjusted[j]>0)
+        candidates.push({i,j,product:xOut[i]*xIn[j]});
+    if(!candidates.length)
+      throw new Error("No feasible lender-borrower pairs remain after removing self-links.");
+
+    const possible=Math.max(1,N*(N-1));
+    const targetDensity=Math.max(baseDensity,Math.min(1,minDegree/Math.max(1,N-1)));
+    const activeRows=lend.filter(v=>v>0).length, activeCols=borrowAdjusted.filter(v=>v>0).length;
+    const targetLinks=Math.min(candidates.length,Math.max(activeRows,activeCols,
+      Math.round(targetDensity*possible)));
+
+    let scored;
+    if(targetLinks>=candidates.length){
+      scored=candidates.map(e=>({score:1,i:e.i,j:e.j}));
+    }else{
+      const expected=z=>candidates.reduce((s,e)=>s+(z*e.product)/(1+z*e.product),0);
+      let lo=0,hi=1;
+      while(expected(hi)<targetLinks && hi<1e18) hi*=2;
+      for(let k=0;k<100;k++){
+        const mid=(lo+hi)/2;
+        if(expected(mid)<targetLinks) lo=mid; else hi=mid;
+      }
+      const z=(lo+hi)/2;
+      scored=candidates.map(e=>({score:(z*e.product)/(1+z*e.product),i:e.i,j:e.j}));
+    }
+    scored.sort((a,b)=>(b.score-a.score)||(a.i-b.i)||(a.j-b.j));
+
+    const key=(i,j)=>i+","+j;
+    const chosen=new Set(scored.slice(0,targetLinks).map(e=>key(e.i,e.j)));
+    for(let i=0;i<N;i++) if(lend[i]>0){
+      let found=false; chosen.forEach(k=>{if(Number(k.split(",")[0])===i) found=true;});
+      if(!found){ const e=scored.find(e=>e.i===i); chosen.add(key(e.i,e.j)); }
+    }
+    for(let j=0;j<N;j++) if(borrowAdjusted[j]>0){
+      let found=false; chosen.forEach(k=>{if(Number(k.split(",")[1])===j) found=true;});
+      if(!found){ const e=scored.find(e=>e.j===j); chosen.add(key(e.i,e.j)); }
+    }
+    const scoreMap=new Map(scored.map(e=>[key(e.i,e.j),Math.max(e.score,1e-12)]));
+
+    function rasFit(support){
+      const A=Array.from({length:N},()=>new Array(N).fill(0));
+      support.forEach(k=>{const q=k.split(",").map(Number); A[q[0]][q[1]]=scoreMap.get(k);});
+      let marginError=Infinity;
+      for(let iteration=1;iteration<=maxit;iteration++){
+        for(let i=0;i<N;i++) if(lend[i]>0){
+          let rs=0; for(let j=0;j<N;j++) rs+=A[i][j];
+          if(rs<=0) return {A:null,marginError,iterations:iteration};
+          const s=lend[i]/rs; for(let j=0;j<N;j++) A[i][j]*=s;
+        }
+        for(let j=0;j<N;j++) if(borrowAdjusted[j]>0){
+          let cs=0; for(let i=0;i<N;i++) cs+=A[i][j];
+          if(cs<=0) return {A:null,marginError,iterations:iteration};
+          const s=borrowAdjusted[j]/cs; for(let i=0;i<N;i++) A[i][j]*=s;
+        }
+        if(iteration%25===0 || iteration===maxit){
+          let re=0,ce=0;
+          for(let i=0;i<N;i++){let s=0;for(let j=0;j<N;j++)s+=A[i][j];re=Math.max(re,Math.abs(s-lend[i]));}
+          for(let j=0;j<N;j++){let s=0;for(let i=0;i<N;i++)s+=A[i][j];ce=Math.max(ce,Math.abs(s-borrowAdjusted[j]));}
+          marginError=Math.max(re,ce)/Math.max(1,totalLend);
+          if(marginError<tol) return {A,marginError,iterations:iteration};
+        }
+      }
+      return {A,marginError,iterations:maxit};
+    }
+
+    const initialLinks=chosen.size;
+    let fitted;
+    while(true){
+      fitted=rasFit(chosen);
+      if(fitted.A && fitted.marginError<tol) break;
+      if(chosen.size>=candidates.length)
+        throw new Error("RAS did not converge even with all feasible links.");
+      let addCount=Math.max(1,Math.ceil(0.05*candidates.length));
+      for(const e of scored) if(!chosen.has(key(e.i,e.j))){
+        chosen.add(key(e.i,e.j)); if(--addCount===0) break;
+      }
+    }
+    return {A:fitted.A,borrowAdjusted,info:{borrowScale,baseDensity,targetDensity,
+      initialLinks,links:chosen.size,density:chosen.size/possible,
+      rasIterations:fitted.iterations,marginError:fitted.marginError}};
+  }
+
+  // ---- leverage matrix Lambda_ij = A_ij / E_i ----
+  function leverage(A, E){ return A.map((row,i)=>row.map(v=>v/E[i])); }
+
+  // ---- spectral radius via power iteration (Lambda >= 0 => Perron-Frobenius) ----
+  function spectralRadius(Lam){
+    const N = Lam.length; if(N===0) return 0;
+    let v = new Array(N).fill(1/Math.sqrt(N)); let r=0;
+    for(let it=0; it<500; it++){
+      const w = new Array(N).fill(0);
+      for(let i=0;i<N;i++){ let s=0; for(let j=0;j<N;j++) s+=Lam[i][j]*v[j]; w[i]=s; }
+      const nrm = Math.sqrt(w.reduce((a,b)=>a+b*b,0));
+      if(nrm===0) return 0;
+      const rn = nrm; // since ||v||=1, ||Lam v|| approximates dominant |lambda|
+      v = w.map(x=>x/nrm);
+      if(Math.abs(rn-r) < 1e-12) { r=rn; break; }
+      r = rn;
+    }
+    return r;
+  }
+
+  // ---- initial distress vector from a scenario ----
+  // scenario: {type:'external'|'externalSel'|'default', alpha, bankIndex}
+  function initialShock(net, sc){
+    const N = net.E.length, h = new Array(N).fill(0);
+    if(sc.type==='default'){ h[sc.bankIndex]=1; }
+    else {
+      const a = sc.alpha;
+      const apply = i => { h[i] = Math.min(1, h[i] + a*net.AE[i]/net.E[i]); };
+      if(sc.type==='externalSel') apply(sc.bankIndex);
+      else for(let i=0;i<N;i++) apply(i);
+    }
+    return h;
+  }
+
+  // ---- LINEAR DebtRank dynamics (Bardoscia 2015) ----
+  // records H(t) history (equity-weighted). Returns {h, hist, rounds, defaults}
+  function runLinear(net, h0, opt){
+    opt = opt||{}; const maxit = opt.maxit||1000, tol = opt.tol||1e-11;
+    const N = net.E.length, Lam = leverage(net.A, net.E);
+    const Esum = net.E.reduce((a,b)=>a+b,0);
+    let h = h0.slice(), hprev = new Array(N).fill(0);
+    const Hhist = [ weighted(h, net.E, Esum) ];
+    let rounds = 0;
+    for(let t=0; t<maxit; t++){
+      const dh = h.map((v,i)=>v - hprev[i]);
+      const hnew = new Array(N);
+      let maxchg = 0;
+      for(let i=0;i<N;i++){
+        let inc=0; for(let j=0;j<N;j++) inc += Lam[i][j]*dh[j];
+        hnew[i] = Math.min(1, h[i] + inc);
+        maxchg = Math.max(maxchg, Math.abs(hnew[i]-h[i]));
+      }
+      hprev = h; h = hnew; rounds = t+1;
+      Hhist.push(weighted(h, net.E, Esum));
+      if(maxchg < tol) break;
+    }
+    return {h, hist:Hhist, rounds, defaults: h.filter(v=>v>=0.999).length};
+  }
+
+  // ---- ORIGINAL DebtRank dynamics (Battiston 2012, propagate once) ----
+  function runOriginal(net, h0, opt){
+    opt = opt||{}; const maxit = opt.maxit||1000;
+    const N = net.E.length, Lam = leverage(net.A, net.E);
+    const Esum = net.E.reduce((a,b)=>a+b,0);
+    let h = h0.slice();
+    const s = h.map(v=>v>0 ? 'D' : 'U');   // distressed / undistressed / inactive
+    const Hhist = [ weighted(h, net.E, Esum) ];
+    let rounds = 0;
+    for(let t=0; t<maxit; t++){
+      const hnew = h.slice();
+      for(let i=0;i<N;i++){
+        let inc=0; for(let j=0;j<N;j++){ if(s[j]==='D') inc += Lam[i][j]*h[j]; }
+        hnew[i] = Math.min(1, h[i] + inc);
+      }
+      // state update: D -> I, then newly-distressed U -> D
+      for(let j=0;j<N;j++){ if(s[j]==='D') s[j]='I'; }
+      for(let i=0;i<N;i++){ if(s[i]==='U' && hnew[i]>0) s[i]='D'; }
+      h = hnew; rounds = t+1;
+      Hhist.push(weighted(h, net.E, Esum));
+      if(!s.includes('D')) break;
+    }
+    return {h, hist:Hhist, rounds, defaults: h.filter(v=>v>=0.999).length};
+  }
+
+  function weighted(h, E, Esum){ let s=0; for(let i=0;i<h.length;i++) s+=E[i]*h[i]; return s/Esum; }
+
+  function runDynamics(net, h0, algo, opt){
+    return algo==='original' ? runOriginal(net,h0,opt) : runLinear(net,h0,opt);
+  }
+
+  // ---- Third round: heuristic fire-sale extension inspired by Battiston 2016 ----
+  // Banks that lost equity sell external assets to restore leverage; a linear
+  // market impact phi depresses the common asset price, inflicting further losses.
+  function fireSale(net, h, phi){
+    const N = net.E.length, Esum = net.E.reduce((a,b)=>a+b,0);
+    // total external assets still held, weighted by remaining health
+    let sold = 0, totAE = net.AE.reduce((a,b)=>a+b,0);
+    for(let i=0;i<N;i++){
+      // a distressed (non-defaulted) bank deleverages proportionally to its loss
+      if(h[i] < 0.999) sold += h[i]*net.AE[i];
+    }
+    const priceDrop = Math.min(0.99, phi * sold / Math.max(totAE,1e-9)); // fractional
+    const h2 = h.slice();
+    let extraEquityLoss = 0;
+    for(let i=0;i<N;i++){
+      const loss = priceDrop * net.AE[i];           // mark-to-market loss on held assets
+      const add = loss/net.E[i];
+      const nv = Math.min(1, h2[i] + add);
+      extraEquityLoss += net.E[i]*(nv - h2[i]);
+      h2[i] = nv;
+    }
+    return {h:h2, priceDrop, thirdRoundH: extraEquityLoss/Esum};
+  }
+
+  // ---- Battiston-style default impact: default each bank, measure induced loss ----
+  // This is distinct from Bardoscia's single-bank external-asset-shock experiment.
+  function allImpacts(net, algo){
+    const N = net.E.length, Esum = net.E.reduce((a,b)=>a+b,0);
+    const imp = new Array(N);
+    for(let i=0;i<N;i++){
+      const h0 = new Array(N).fill(0); h0[i]=1;
+      const res = runDynamics(net, h0, algo, {});
+      const Hall = weighted(res.h, net.E, Esum);
+      imp[i] = Math.max(0, Hall - net.E[i]/Esum);   // exclude the seed's own equity
+    }
+    return imp;
+  }
+
+  // ---- Beta / Gamma samplers for Monte-Carlo ----
+  function gammaSample(k){ // Marsaglia-Tsang, k>0
+    if(k<1){ const u=Math.random(); return gammaSample(1+k)*Math.pow(u,1/k); }
+    const d=k-1/3, c=1/Math.sqrt(9*d);
+    while(true){
+      let x,v;
+      do{ x=gaussian(); v=1+c*x; }while(v<=0);
+      v=v*v*v; const u=Math.random();
+      if(u<1-0.0331*x*x*x*x) return d*v;
+      if(Math.log(u) < 0.5*x*x + d*(1-v+Math.log(v))) return d*v;
+    }
+  }
+  function gaussian(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function betaSample(a,b){ const x=gammaSample(a), y=gammaSample(b); return x/(x+y); }
+
+  // ---- Monte-Carlo loss distribution + VaR/CVaR ----
+  function monteCarlo(net, algo, meanShock, trials, level){
+    const Esum = net.E.reduce((a,b)=>a+b,0);
+    const a=2.0, b = a*(1-meanShock)/meanShock;   // Beta with chosen mean
+    const full=[], first=[];
+    for(let t=0;t<trials;t++){
+      let alpha = betaSample(a,b);
+      const h0 = net.E.map((Ei,i)=>Math.min(1, alpha*net.AE[i]/Ei));
+      first.push(weighted(h0, net.E, Esum));
+      const res = runDynamics(net, h0, algo, {maxit:600});
+      full.push(weighted(res.h, net.E, Esum));
+    }
+    return { first: stat(first, level), full: stat(full, level), fullArr:full, firstArr:first };
+  }
+  function stat(arr, level){
+    const s=arr.slice().sort((x,y)=>x-y), n=s.length;
+    const mean=s.reduce((a,b)=>a+b,0)/n;
+    const qi=Math.min(n-1, Math.floor(level*n));
+    const VaR=s[qi];
+    let cv=0,cn=0; for(let i=qi;i<n;i++){cv+=s[i];cn++;}
+    const CVaR= cn? cv/cn : VaR;
+    return {mean, VaR, CVaR, arr:s};
+  }
+
+  return {parseCSV, buildNetwork, reconstruct, leverage, spectralRadius, initialShock,
+          runDynamics, runLinear, runOriginal, fireSale, allImpacts, monteCarlo, weighted};
+})();
+
+/* ============================================================= *
+ *  UI                                                           *
+ * ============================================================= */
+(function(){
+  "use strict";
+  let NET=null, LASTRUN=null, IMPACTS=null, ALGO='linear';
+  let CURRENT_CSV=null, DIDMC=false;
+  const $ = id => document.getElementById(id);
+  const fmt = (v,d=3)=> (v==null||!isFinite(v))?"&ndash;":Number(v).toFixed(d);
+  const pct = (v,d=1)=> (v*100).toFixed(d)+"%";
+  function msg(el, text, cls){ $(el).innerHTML = `<div class="msg ${cls}">${text}</div>`; }
+
+  // colour ramp for impact (blue -> red)
+  function ramp(t){ t=Math.max(0,Math.min(1,t));
+    const c1=[36,113,163], c2=[192,57,43];
+    const c=c1.map((a,i)=>Math.round(a+(c2[i]-a)*t)); return `rgb(${c[0]},${c[1]},${c[2]})`; }
+
+  // ---------- persistence: results survive navigation to the guide / method ----------
+  // The loaded data and every control are saved to localStorage; on the next
+  // page load the computation is rebuilt automatically (everything here is
+  // deterministic, including the fixed-seed Monte-Carlo), so going to another
+  // page and coming back shows the same results instead of a blank tool.
+  const STATE_KEY = "debtrankToolState_v3";
+  function saveState(){
+    if(!NET || !CURRENT_CSV) return;
+    try{
+      localStorage.setItem(STATE_KEY, JSON.stringify({
+        csv: CURRENT_CSV,
+        controls: {
+          algo:$("algo").value, shockType:$("shockType").value,
+          alpha:$("alpha").value, bankIndex:$("bankSel").value,
+          fire:$("fire").value, phi:$("phi").value,
+          netLayout:$("netLayout").value, netMaxEdges:$("netMaxEdges").value,
+          mcN:$("mcN").value, varLevel:$("varLevel").value, mcMean:$("mcMean").value
+        },
+        didRun: !!LASTRUN, didMC: DIDMC
+      }));
+    }catch(e){ /* storage blocked (some file:// setups) -> persistence off */ }
+  }
+  function restoreState(){
+    let st=null;
+    try{ st=JSON.parse(localStorage.getItem(STATE_KEY)||"null"); }catch(e){ st=null; }
+    if(!st || !st.csv) return;
+    ingest(st.csv);
+    if(!NET) return;
+    const c=st.controls||{}, set=(id,v)=>{ const el=$(id); if(el && v!=null) el.value=v; };
+    set("algo",c.algo); set("shockType",c.shockType); set("alpha",c.alpha);
+    set("fire",c.fire); set("phi",c.phi); set("netLayout",c.netLayout);
+    set("netMaxEdges",c.netMaxEdges); set("mcN",c.mcN); set("varLevel",c.varLevel);
+    set("mcMean",c.mcMean); set("bankSel",c.bankIndex);
+    const t=$("shockType").value;
+    $("alphaWrap").classList.toggle("hidden", t==='default');
+    $("bankWrap").classList.toggle("hidden", t==='external');
+    if(st.didRun) $("run").click();   // rebuilds all result panels
+    if(st.didMC)  $("runMC").click(); // rebuilds the Monte-Carlo panel
+  }
+
+  // ---------- data loading ----------
+  function ingest(text){
+    try{
+      NET = DR.buildNetwork(text);
+      CURRENT_CSV = text;
+      const N = NET.E.length;
+      const Lam = DR.leverage(NET.A, NET.E);
+      NET.specRad = DR.spectralRadius(Lam);
+      // populate bank selector
+      const sel=$("bankSel"); sel.innerHTML="";
+      NET.names.forEach((n,i)=>{ const o=document.createElement("option"); o.value=i; o.textContent=n; sel.appendChild(o); });
+      const links = NET.A.flat().filter(v=>v>0).length;
+      const rec = NET.reconstructionInfo;
+      const recText = NET.reconstructed
+        ? `<b>deterministic sparse network reconstructed</b> (directed fitness + RAS; density ${pct(rec.density,1)}`+
+          `${Math.abs(rec.borrowScale-1)>1e-10? `; borrowing totals rescaled by ${fmt(rec.borrowScale,4)}`:""})`
+        : "bilateral matrix read directly";
+      msg("dataMsg",
+        `Loaded <b>${N}</b> institutions &middot; ${links} interbank links &middot; `+
+        `${recText} &middot; `+
+        `leverage-matrix spectral radius |&lambda;<sub>max</sub>| = <b>${fmt(NET.specRad,3)}</b> `+
+        `(${NET.specRad<1? "<span class='pill' style='background:var(--green)'>stable regime</span>":"<span class='pill' style='background:var(--pos)'>unstable / amplifying</span>"})`,
+        "ok");
+      previewData();
+      $("cfgPanel").classList.remove("hidden");
+    }catch(e){ msg("dataMsg", "Error: "+e.message, "err"); NET=null; }
+  }
+  function previewData(){
+    const N=NET.E.length, show=Math.min(N,8);
+    let h="<tr><th class='name'>Bank</th><th>Ext. assets</th><th>Interbank lent</th><th>Interbank borrowed</th><th>Equity</th><th>Tot. assets</th></tr>";
+    for(let i=0;i<N;i++){
+      const ta = NET.AE[i]+NET.ib_lending[i];
+      h+=`<tr><td class='name'>${NET.names[i]}</td><td>${fmt(NET.AE[i],0)}</td><td>${fmt(NET.ib_lending[i],1)}</td>`+
+         `<td>${fmt(NET.ib_borrowing[i],1)}</td><td>${fmt(NET.E[i],1)}</td><td>${fmt(ta,0)}</td></tr>`;
+    }
+    $("dataPreview").innerHTML = `<details open><summary>Balance-sheet preview (input currency units)</summary>
+      <div class="tblscroll" style="margin-top:8px"><table class="cm">${h}</table></div></details>`;
+  }
+
+  $("file").addEventListener("change", e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader(); r.onload=()=>ingest(r.result); r.readAsText(f);
+  });
+  $("loadExample").addEventListener("click", ()=> ingest($("exampleData").textContent.trim()));
+  $("dlMatrix").addEventListener("click", ()=> download("DebtRank_example_network.csv", $("exampleData").textContent.trim()));
+  $("dlAgg").addEventListener("click", ()=> download("DebtRank_example_aggregate.csv", aggregateCSV()));
+  function aggregateCSV(){
+    if(!NET){ ingest($("exampleData").textContent.trim()); }
+    let s="bank,interbank_lending,interbank_borrowing,external_assets,equity\n";
+    for(let i=0;i<NET.E.length;i++)
+      s+=`${NET.names[i]},${NET.ib_lending[i].toFixed(2)},${NET.ib_borrowing[i].toFixed(2)},${NET.AE[i].toFixed(2)},${NET.E[i].toFixed(2)}\n`;
+    return s;
+  }
+  function download(name, text){
+    const b=new Blob([text],{type:"text/csv"}); const u=URL.createObjectURL(b);
+    const a=document.createElement("a"); a.href=u; a.download=name; a.click(); URL.revokeObjectURL(u);
+  }
+
+  // ---------- scenario UI ----------
+  $("shockType").addEventListener("change", ()=>{
+    const t=$("shockType").value;
+    $("alphaWrap").classList.toggle("hidden", t==='default');
+    $("bankWrap").classList.toggle("hidden", t==='external');
+  });
+
+  // ---------- run ----------
+  $("run").addEventListener("click", ()=>{
+    if(!NET){ msg("runMsg","Load data first.","err"); return; }
+    ALGO = $("algo").value;
+    const sc = {
+      type: $("shockType").value,
+      alpha: Math.max(0, Number($("alpha").value)/100),
+      bankIndex: Number($("bankSel").value)
+    };
+    const h0 = DR.initialShock(NET, sc);
+    const Esum = NET.E.reduce((a,b)=>a+b,0);
+    const firstRound = DR.weighted(h0, NET.E, Esum);
+    const res = DR.runDynamics(NET, h0, ALGO, {});
+    let h = res.h, third=0, priceDrop=0, hist=res.hist.slice();
+    if($("fire").value==='yes'){
+      const fs = DR.fireSale(NET, h, Number($("phi").value));
+      h = fs.h; third = fs.thirdRoundH; priceDrop = fs.priceDrop;
+      hist.push(DR.weighted(h, NET.E, Esum));
+    }
+    const Hfinal = DR.weighted(h, NET.E, Esum);
+    IMPACTS = DR.allImpacts(NET, ALGO);
+    LASTRUN = {sc, h0, h, hist, res, firstRound, Hfinal, third, priceDrop, Esum, secondRound:res.hist[res.hist.length-1]-firstRound};
+    renderSystem(); renderFirm(); renderNetwork();
+    $("sysPanel").classList.remove("hidden");
+    $("firmPanel").classList.remove("hidden");
+    $("netPanel").classList.remove("hidden");
+    $("varPanel").classList.remove("hidden");
+    msg("runMsg", `Done &middot; ${res.rounds} propagation rounds &middot; converged.`, "ok");
+    if($("sysPanel").scrollIntoView) $("sysPanel").scrollIntoView({behavior:"smooth"});
+    saveState();
+  });
+
+  // ---------- system-level render ----------
+  function renderSystem(){
+    const L=LASTRUN, N=NET.E.length;
+    const ampl = L.firstRound>0 ? L.Hfinal/L.firstRound : NaN;
+    const defaults = L.h.filter(v=>v>=0.999).length;
+    const Eloss = (L.Hfinal*L.Esum);
+    $("kpis").innerHTML = [
+      kpi("Global vulnerability H(T)", pct(L.Hfinal,1), "equity-weighted system loss"),
+      kpi("Direct (1st-round) loss", pct(L.firstRound,1), "from the external shock alone"),
+      kpi("Network amplification", isFinite(ampl)? ampl.toFixed(2)+"&times;":"&ndash;", "H(T) / first-round"),
+      kpi("Equity wiped out", "$"+fmt(Eloss,0)+"bn", "of $"+fmt(L.Esum,0)+"bn total"),
+      kpi("Defaults", defaults+" / "+N, "banks with h=1"),
+      kpi("Spectral radius |&lambda;<sub>max</sub>|", fmt(NET.specRad,3), NET.specRad<1?"stable":"amplifying")
+    ].join("");
+
+    const reg = NET.specRad<1
+      ? `the leverage matrix has spectral radius ${fmt(NET.specRad,2)} &lt; 1, so distress is progressively damped and the cascade converges`
+      : `the leverage matrix has spectral radius ${fmt(NET.specRad,2)} &gt; 1, so even a small shock is amplified until banks default`;
+    $("sysIntuition").innerHTML =
+      `A shock that directly destroys <b>${pct(L.firstRound,1)}</b> of system equity ends up destroying `+
+      `<b>${pct(L.Hfinal,1)}</b> once it reverberates through interbank exposures &mdash; an amplification of `+
+      `<b>${isFinite(ampl)?ampl.toFixed(1):"&ndash;"}&times;</b>. Here ${reg}.`;
+
+    convChart(L.hist);
+    roundChart(L.firstRound, L.secondRound, L.third);
+  }
+  function kpi(lab,val,sub){ return `<span class="kpi"><span class="lab">${lab}</span><b>${val}</b><br><span class="lab">${sub}</span></span>`; }
+
+  // convergence line chart (SVG)
+  function convChart(hist){
+    const W=520,H=240,pl=46,pr=14,pt=14,pb=34, iw=W-pl-pr, ih=H-pt-pb;
+    const n=hist.length, ymax=Math.max(0.05, Math.max(...hist)*1.08);
+    const x=i=> pl + (n<=1?0:i/(n-1))*iw;
+    const y=v=> pt + ih - (v/ymax)*ih;
+    let g="";
+    // grid
+    for(let k=0;k<=4;k++){ const yy=pt+ih-(k/4)*ih, vv=(k/4)*ymax;
+      g+=`<line x1="${pl}" y1="${yy}" x2="${W-pr}" y2="${yy}" stroke="#eef2f6"/>`;
+      g+=`<text x="${pl-6}" y="${yy+4}" text-anchor="end" font-size="10" fill="#5b6b7b">${pct(vv,0)}</text>`; }
+    let path=hist.map((v,i)=>(i?"L":"M")+x(i)+" "+y(v)).join(" ");
+    let dots=hist.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="#1f5fa6"/>`).join("");
+    // x labels
+    let xl="";
+    for(let i=0;i<n;i+= Math.max(1,Math.ceil(n/8))) xl+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="10" fill="#5b6b7b">${i}</text>`;
+    $("convChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}">
+      ${g}<path d="${path}" fill="none" stroke="#1f5fa6" stroke-width="2.2"/>${dots}${xl}
+      <text x="${pl+iw/2}" y="${H-1}" text-anchor="middle" font-size="11" fill="#5b6b7b">propagation round t</text>
+      <text x="14" y="${pt+ih/2}" text-anchor="middle" font-size="11" fill="#5b6b7b" transform="rotate(-90 14 ${pt+ih/2})">global vulnerability H(t)</text>
+    </svg>`;
+  }
+
+  // stacked round-decomposition bar
+  function roundChart(r1,r2,r3){
+    const W=520,H=240,pl=46,pr=14,pt=20,pb=40, ih=H-pt-pb;
+    const ymax=Math.max(0.05, (r1+r2+r3)*1.15);
+    const y=v=> pt+ih-(v/ymax)*ih;
+    const bx=pl+120, bw=120;
+    const segs=[["1st round (external)",r1,"#2471a3"],["2nd round (interbank)",r2,"#1f5fa6"],["3rd round (simplified fire sales)",r3,"#b9770e"]];
+    let yacc=0, rects="", leg="";
+    segs.forEach((s,k)=>{
+      const hgt=(s[1]/ymax)*ih;
+      rects+=`<rect x="${bx}" y="${y(yacc+s[1])}" width="${bw}" height="${hgt}" fill="${s[2]}"/>`;
+      if(s[1]>0.001) rects+=`<text x="${bx+bw/2}" y="${y(yacc+s[1]/2)+4}" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">${pct(s[1],1)}</text>`;
+      yacc+=s[1];
+      leg+=`<g><rect x="${bx+bw+30}" y="${pt+18+k*22}" width="13" height="13" fill="${s[2]}"/>`+
+           `<text x="${bx+bw+50}" y="${pt+29+k*22}" font-size="11.5" fill="#1d2733">${s[0]}: ${pct(s[1],1)}</text></g>`;
+    });
+    let grid="";
+    for(let k=0;k<=4;k++){ const yy=pt+ih-(k/4)*ih, vv=(k/4)*ymax;
+      grid+=`<line x1="${pl}" y1="${yy}" x2="${bx+bw+30}" y2="${yy}" stroke="#eef2f6"/>`;
+      grid+=`<text x="${pl-6}" y="${yy+4}" text-anchor="end" font-size="10" fill="#5b6b7b">${pct(vv,0)}</text>`; }
+    $("roundChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${grid}${rects}${leg}
+      <text x="${bx+bw/2}" y="${H-14}" text-anchor="middle" font-size="11" fill="#5b6b7b">total H(T) = ${pct(r1+r2+r3,1)}</text></svg>`;
+  }
+
+  // ---------- firm-level render ----------
+  function renderFirm(){
+    const N=NET.E.length, L=LASTRUN;
+    const order = [...Array(N).keys()];
+    // impact ranking
+    const impOrd = order.slice().sort((a,b)=>IMPACTS[b]-IMPACTS[a]);
+    $("impactRank").innerHTML = rankTable(impOrd, IMPACTS, v=>pct(v,1), true);
+    // vulnerability ranking
+    const vulnOrd = order.slice().sort((a,b)=>L.h[b]-L.h[a]);
+    $("vulnRank").innerHTML = rankTable(vulnOrd, L.h, v=>pct(v,1), false);
+    scatter();
+  }
+  function rankTable(ord, vals, fmtf, isImpact){
+    const vmax=Math.max(...vals,1e-9);
+    let rows="";
+    ord.slice(0,12).forEach((i,k)=>{
+      const v=vals[i], w=(v/vmax)*100, col= isImpact? ramp(v/Math.max(...vals)) : (v>=0.999?"#c0392b":"#1f5fa6");
+      rows+=`<tr><td class='name'>${k+1}. ${NET.names[i]}</td>`+
+            `<td class='bar'><div class='barbg'><div class='barfill' style='width:${w}%;background:${col}'></div></div></td>`+
+            `<td>${fmtf(v)}</td></tr>`;
+    });
+    return `<table class="rk"><tr><th class='name'>Institution</th><th class='bar'></th><th>${isImpact?'Default impact':'Loss'}</th></tr>${rows}</table>`;
+  }
+
+  function scatter(){
+    const N=NET.E.length, L=LASTRUN;
+    const W=720,H=420,pl=58,pr=20,pt=18,pb=46, iw=W-pl-pr, ih=H-pt-pb;
+    const xmax=Math.max(...IMPACTS,0.05)*1.08, ymax=Math.max(...L.h,0.05)*1.08;
+    const ta=NET.names.map((_,i)=>NET.AE[i]+NET.ib_lending[i]); const tamax=Math.max(...ta);
+    const X=v=>pl+(v/xmax)*iw, Y=v=>pt+ih-(v/ymax)*ih;
+    let grid="";
+    for(let k=0;k<=4;k++){ const xx=pl+(k/4)*iw, yy=pt+ih-(k/4)*ih;
+      grid+=`<line x1="${xx}" y1="${pt}" x2="${xx}" y2="${pt+ih}" stroke="#eef2f6"/>`;
+      grid+=`<line x1="${pl}" y1="${yy}" x2="${pl+iw}" y2="${yy}" stroke="#eef2f6"/>`;
+      grid+=`<text x="${xx}" y="${pt+ih+16}" text-anchor="middle" font-size="10" fill="#5b6b7b">${pct((k/4)*xmax,0)}</text>`;
+      grid+=`<text x="${pl-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#5b6b7b">${pct((k/4)*ymax,0)}</text>`; }
+    // median guide lines
+    const medX=median(IMPACTS), medY=median(L.h);
+    grid+=`<line x1="${X(medX)}" y1="${pt}" x2="${X(medX)}" y2="${pt+ih}" stroke="#b9770e" stroke-dasharray="4 4" opacity=".5"/>`;
+    grid+=`<line x1="${pl}" y1="${Y(medY)}" x2="${pl+iw}" y2="${Y(medY)}" stroke="#b9770e" stroke-dasharray="4 4" opacity=".5"/>`;
+    let pts="";
+    for(let i=0;i<N;i++){
+      const r=5+9*Math.sqrt(ta[i]/tamax), col=ramp(IMPACTS[i]/Math.max(...IMPACTS));
+      const inUR = IMPACTS[i]>medX && L.h[i]>medY;
+      pts+=`<circle cx="${X(IMPACTS[i])}" cy="${Y(L.h[i])}" r="${r}" fill="${col}" opacity="0.78" stroke="${inUR?'#0d3a66':'#fff'}" stroke-width="${inUR?2:1}"/>`;
+      if(IMPACTS[i]>medX*0.9 || L.h[i]>medY*1.1 || ta[i]>tamax*0.6)
+        pts+=`<text x="${X(IMPACTS[i])+r+2}" y="${Y(L.h[i])+3}" font-size="10" fill="#1d2733">${NET.names[i]}</text>`;
+    }
+    $("scatter").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${grid}${pts}
+      <text x="${pl+iw/2}" y="${H-8}" text-anchor="middle" font-size="11.5" fill="#5b6b7b">default-based systemic impact &rarr;</text>
+      <text x="16" y="${pt+ih/2}" text-anchor="middle" font-size="11.5" fill="#5b6b7b" transform="rotate(-90 16 ${pt+ih/2})">vulnerability h(T) under scenario &rarr;</text>
+      <text x="${pl+iw-6}" y="${pt+14}" text-anchor="end" font-size="10.5" fill="#0d3a66" font-weight="700">too-central-to-fail</text>
+    </svg>`;
+  }
+  function median(a){ const s=a.slice().sort((x,y)=>x-y),n=s.length; return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2; }
+
+  // ---------- network diagram: layout algorithms ----------
+  // deterministic LCG so spring/KK layouts are reproducible across runs
+  function makeRng(seed){ let s=seed>>>0; return ()=>{ s=(1664525*s+1013904223)>>>0; return s/4294967296; }; }
+
+  // hop-count shortest paths on the undirected link graph (BFS); disconnected pairs get maxd+1
+  function hopDistances(N, adj){
+    const D=Array.from({length:N},()=>new Array(N).fill(Infinity));
+    for(let s=0;s<N;s++){
+      D[s][s]=0; const q=[s];
+      while(q.length){ const u=q.shift();
+        for(let v=0;v<N;v++) if(adj[u][v] && D[s][v]===Infinity){ D[s][v]=D[s][u]+1; q.push(v); } }
+    }
+    let maxd=1;
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++) if(isFinite(D[i][j])) maxd=Math.max(maxd,D[i][j]);
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++) if(!isFinite(D[i][j])) D[i][j]=maxd+1;
+    return D;
+  }
+
+  // Kamada-Kawai via stress majorization (SMACOF), unit-circle coordinates
+  function layoutKK(N, adj){
+    const D=hopDistances(N,adj);
+    let maxd=1; for(let i=0;i<N;i++)for(let j=0;j<N;j++) maxd=Math.max(maxd,D[i][j]);
+    const L=D.map(row=>row.map(d=>d/maxd));            // ideal lengths in [0,1]
+    const Wt=D.map(row=>row.map(d=>d>0?1/(d*d):0));    // weights 1/d^2
+    // init on a circle (deterministic)
+    const P=Array.from({length:N},(_,i)=>[Math.cos(2*Math.PI*i/N), Math.sin(2*Math.PI*i/N)]);
+    for(let it=0; it<250; it++){
+      for(let i=0;i<N;i++){
+        let sx=0, sy=0, sw=0;
+        for(let j=0;j<N;j++){
+          if(j===i) continue;
+          const dx=P[i][0]-P[j][0], dy=P[i][1]-P[j][1];
+          const dist=Math.max(1e-9, Math.hypot(dx,dy));
+          const w=Wt[i][j];
+          sx += w*(P[j][0] + L[i][j]*dx/dist);
+          sy += w*(P[j][1] + L[i][j]*dy/dist);
+          sw += w;
+        }
+        if(sw>0){ P[i][0]=sx/sw; P[i][1]=sy/sw; }
+      }
+    }
+    return P;
+  }
+
+  // Fruchterman-Reingold spring layout
+  function layoutSpring(N, adj){
+    const rng=makeRng(20121212);
+    const P=Array.from({length:N},()=>[2*rng()-1, 2*rng()-1]);
+    const k=Math.sqrt(4/N);          // ideal distance in a 2x2 box
+    let temp=0.25;
+    for(let it=0; it<300; it++){
+      const disp=Array.from({length:N},()=>[0,0]);
+      for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){           // repulsion
+        let dx=P[i][0]-P[j][0], dy=P[i][1]-P[j][1];
+        let d=Math.max(1e-6, Math.hypot(dx,dy));
+        const f=k*k/d;
+        disp[i][0]+=dx/d*f; disp[i][1]+=dy/d*f;
+        disp[j][0]-=dx/d*f; disp[j][1]-=dy/d*f;
+      }
+      for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){           // attraction along links
+        if(!adj[i][j]) continue;
+        let dx=P[i][0]-P[j][0], dy=P[i][1]-P[j][1];
+        let d=Math.max(1e-6, Math.hypot(dx,dy));
+        const f=d*d/k;
+        disp[i][0]-=dx/d*f; disp[i][1]-=dy/d*f;
+        disp[j][0]+=dx/d*f; disp[j][1]+=dy/d*f;
+      }
+      for(let i=0;i<N;i++){
+        const d=Math.max(1e-9, Math.hypot(disp[i][0],disp[i][1]));
+        const step=Math.min(d,temp);
+        P[i][0]+=disp[i][0]/d*step; P[i][1]+=disp[i][1]/d*step;
+      }
+      temp*=0.985;
+    }
+    return P;
+  }
+
+  // circular: ordered by impact (descending) around one circle
+  function layoutCircular(N, ord){
+    const P=new Array(N);
+    ord.forEach((node,k)=>{ const a=2*Math.PI*k/N - Math.PI/2; P[node]=[Math.cos(a),Math.sin(a)]; });
+    return P;
+  }
+
+  // shell: concentric rings by DebtRank impact (inner = most systemic)
+  function layoutShell(N, ord){
+    const P=new Array(N);
+    const n1=Math.max(1,Math.round(N*0.2)), n2=Math.max(1,Math.round(N*0.3));
+    const shells=[ord.slice(0,n1), ord.slice(n1,n1+n2), ord.slice(n1+n2)];
+    const radii=[0.35,0.68,1.0];
+    shells.forEach((sh,s)=>{
+      sh.forEach((node,k)=>{
+        const a=2*Math.PI*k/Math.max(1,sh.length) - Math.PI/2 + s*0.35; // offset rings
+        P[node]=[radii[s]*Math.cos(a), radii[s]*Math.sin(a)];
+      });
+    });
+    return P;
+  }
+
+  // Battiston (2012) golden-angle spiral: most systemic at the centre
+  function layoutSpiral(N, ord){
+    const P=new Array(N);
+    ord.forEach((node,k)=>{
+      const ang=k*2.399963, rad=0.12 + 0.88*k/Math.max(1,N-1);
+      P[node]=[rad*Math.cos(ang), rad*Math.sin(ang)];
+    });
+    return P;
+  }
+
+  const LAYOUT_NOTES={
+    kk:"Kamada&ndash;Kawai: distances on screen approximate shortest-path distances in the network &mdash; good general-purpose view of the overall structure.",
+    spring:"Spring (Fruchterman&ndash;Reingold): linked banks attract, all banks repel &mdash; clusters of heavily interconnected banks emerge naturally.",
+    circular:"Circular: banks on one ring, ordered clockwise by DebtRank impact from the top &mdash; best for seeing who trades with whom.",
+    shell:"Shell: concentric rings by DebtRank impact &mdash; inner ring = most systemically important institutions.",
+    spiral:"Spiral after Battiston et&nbsp;al. (2012, Fig.&nbsp;3): the most systemically important banks sit at the centre and importance decreases outward."
+  };
+
+  // draw the N largest exposures (N = 0 or blank draws all). Cosmetic only --
+  // never affects the DebtRank/contagion results. `edges` is pre-sorted desc.
+  function selectEdges(edges){
+    const m=edges.length; if(m===0) return edges;
+    let v=Number($("netMaxEdges")&&$("netMaxEdges").value); if(!isFinite(v)||v<0) v=0;
+    return (v>0) ? edges.slice(0, Math.min(m, Math.round(v))) : edges;
+  }
+
+  function renderNetwork(){
+    const N=NET.E.length;
+    const W=720,H=560,cx=W/2,cy=H/2;
+    const ord=[...Array(N).keys()].sort((a,b)=>IMPACTS[b]-IMPACTS[a]); // most important first
+    const ta=NET.names.map((_,i)=>NET.AE[i]+NET.ib_lending[i]); const tamax=Math.max(...ta);
+    const impMax=Math.max(...IMPACTS,1e-9);
+    // undirected adjacency for layout purposes
+    const adj=Array.from({length:N},()=>new Array(N).fill(false));
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++) if(i!==j && (NET.A[i][j]>0||NET.A[j][i]>0)){ adj[i][j]=true; adj[j][i]=true; }
+
+    const kind=($("netLayout")&&$("netLayout").value)||"kk";
+    let P;
+    if(kind==="spring")        P=layoutSpring(N,adj);
+    else if(kind==="circular") P=layoutCircular(N,ord);
+    else if(kind==="shell")    P=layoutShell(N,ord);
+    else if(kind==="spiral")   P=layoutSpiral(N,ord);
+    else                       P=layoutKK(N,adj);
+
+    // rescale unit coordinates to the SVG canvas
+    const xs=P.map(p=>p[0]), ys=P.map(p=>p[1]);
+    const xmin=Math.min(...xs), xmax=Math.max(...xs), ymin=Math.min(...ys), ymax=Math.max(...ys);
+    const sx=(W-130)/Math.max(1e-9,xmax-xmin), sy=(H-130)/Math.max(1e-9,ymax-ymin), s=Math.min(sx,sy);
+    const mapPt=(ux,uy)=>[cx+( ux-(xmin+xmax)/2 )*s, cy+18+( uy-(ymin+ymax)/2 )*s];
+    const pos=P.map(p=>mapPt(p[0],p[1]));
+    // structural overlays: shell concentric rings (20% / 30% / rest) and the golden-angle spiral
+    let overlay="";
+    if(kind==="shell"){
+      const c=mapPt(0,0);
+      const rings=[[0.35,"inner 20%"],[0.68,"next 30%"],[1.0,"rest"]];
+      rings.forEach(rg=>{
+        const rr=(rg[0]*s).toFixed(1);
+        overlay+=`<circle cx="${c[0]}" cy="${c[1]}" r="${rr}" fill="none" stroke="#9fb3c4" stroke-width="1" stroke-dasharray="5 4" opacity="0.65"/>`;
+        overlay+=`<text x="${c[0]}" y="${(c[1]-rg[0]*s+12).toFixed(1)}" text-anchor="middle" font-size="9" fill="#8497a8">${rg[1]}</text>`;
+      });
+    } else if(kind==="spiral"){
+      let d=""; const last=Math.max(1,N-1), steps=Math.max(240,N*24);
+      for(let q=0;q<=steps;q++){
+        const t=last*q/steps, ang=t*2.399963, rad=0.12+0.88*t/last;
+        const p=mapPt(rad*Math.cos(ang), rad*Math.sin(ang));
+        d+=(q?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)+" ";
+      }
+      overlay+=`<path d="${d}" fill="none" stroke="#9fb3c4" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.7"/>`;
+    }
+    if($("netLayoutNote")) $("netLayoutNote").innerHTML=LAYOUT_NOTES[kind]||"";
+    // edges (thin), strongest exposures only
+    const edges=[];
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++) if(NET.A[i][j]>0) edges.push([i,j,NET.A[i][j]]);
+    edges.sort((a,b)=>b[2]-a[2]);
+    const top=selectEdges(edges);
+    const emax=Math.max(...top.map(e=>e[2]),1e-9);
+    if($("netLayoutNote"))
+      $("netLayoutNote").innerHTML=(LAYOUT_NOTES[kind]||"")+
+        ` <span style="color:#5b6b7b">&middot; drawing ${top.length} of ${edges.length} exposures.</span>`;
+    let el="";
+    top.forEach(e=>{
+      const [i,j,w]=e, col=ramp(IMPACTS[i]/impMax);
+      el+=`<line x1="${pos[i][0]}" y1="${pos[i][1]}" x2="${pos[j][0]}" y2="${pos[j][1]}" stroke="${col}" stroke-width="${0.4+2.4*(w/emax)}" opacity="0.28"/>`;
+    });
+    let nl="";
+    for(let i=0;i<N;i++){
+      const r=6+13*Math.sqrt(ta[i]/tamax), col=ramp(IMPACTS[i]/impMax);
+      nl+=`<circle cx="${pos[i][0]}" cy="${pos[i][1]}" r="${r}" fill="${col}" opacity="0.9" stroke="#fff" stroke-width="1.4"/>`;
+      nl+=`<text x="${pos[i][0]}" y="${pos[i][1]-r-3}" text-anchor="middle" font-size="9.5" fill="#1d2733">${NET.names[i]}</text>`;
+    }
+    // legend
+    let lg=`<text x="16" y="22" font-size="11" fill="#5b6b7b">node size &prop; total assets &middot; colour &prop; DebtRank impact</text>`;
+    for(let k=0;k<=4;k++){ const t=k/4; lg+=`<rect x="${16+k*30}" y="32" width="30" height="9" fill="${ramp(t)}"/>`; }
+    lg+=`<text x="16" y="56" font-size="10" fill="#5b6b7b">low</text><text x="136" y="56" font-size="10" fill="#5b6b7b" text-anchor="end">high impact</text>`;
+    $("netChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${lg}${overlay}${el}${nl}</svg>`;
+  }
+  $("netLayout").addEventListener("change", ()=>{ if(NET && IMPACTS){ renderNetwork(); saveState(); } });
+  $("netMaxEdges").addEventListener("input", ()=>{ if(NET && IMPACTS){ renderNetwork(); saveState(); } });
+
+  // ---------- Monte-Carlo VaR ----------
+  $("runMC").addEventListener("click", ()=>{
+    if(!NET){ return; }
+    const trials=Math.max(200,Number($("mcN").value));
+    const level=Number($("varLevel").value);
+    const mean=Math.max(0.001, Number($("mcMean").value)/100);
+    const mc=DR.monteCarlo(NET, ALGO||$("algo").value, mean, trials, level);
+    const Lp=(level*100).toFixed(0);
+    $("varKpis").innerHTML=[
+      kpi("Mean loss (first round)", pct(mc.first.mean,1), "no network effects"),
+      kpi("Mean loss (full)", pct(mc.full.mean,1), "with propagation"),
+      kpi(`VaR ${Lp}% (first round)`, pct(mc.first.VaR,1), "direct only"),
+      kpi(`VaR ${Lp}% (full)`, pct(mc.full.VaR,1), "network-aware"),
+      kpi(`CVaR ${Lp}% (full)`, pct(mc.full.CVaR,1), "expected tail loss")
+    ].join("");
+    varChart(mc, level);
+    DIDMC = true;
+    saveState();
+  });
+
+  function varChart(mc, level){
+    const W=720,H=320,pl=50,pr=16,pt=16,pb=42, iw=W-pl-pr, ih=H-pt-pb;
+    const all=mc.firstArr.concat(mc.fullArr);
+    const xmax=Math.max(...all,0.05)*1.02, bins=40;
+    const h1=hist(mc.firstArr,bins,xmax), h2=hist(mc.fullArr,bins,xmax);
+    const ymax=Math.max(...h1,...h2,1)*1.1;
+    const X=v=>pl+(v/xmax)*iw, Y=c=>pt+ih-(c/ymax)*ih, bw=iw/bins;
+    let bars="";
+    for(let k=0;k<bins;k++){
+      const x=pl+k*bw;
+      bars+=`<rect x="${x}" y="${Y(h1[k])}" width="${bw-1}" height="${pt+ih-Y(h1[k])}" fill="#2471a3" opacity="0.45"/>`;
+      bars+=`<rect x="${x}" y="${Y(h2[k])}" width="${bw-1}" height="${pt+ih-Y(h2[k])}" fill="#c0392b" opacity="0.45"/>`;
+    }
+    const vl=(v,col,lab)=>`<line x1="${X(v)}" y1="${pt}" x2="${X(v)}" y2="${pt+ih}" stroke="${col}" stroke-width="2" stroke-dasharray="5 3"/>`+
+      `<text x="${X(v)}" y="${pt+12}" font-size="10" fill="${col}" text-anchor="middle">${lab} ${pct(v,0)}</text>`;
+    let grid="";
+    for(let k=0;k<=5;k++){ const xx=pl+(k/5)*iw; grid+=`<text x="${xx}" y="${pt+ih+16}" text-anchor="middle" font-size="10" fill="#5b6b7b">${pct((k/5)*xmax,0)}</text>`; }
+    const Lp=(level*100).toFixed(0);
+    $("varChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${grid}${bars}
+      ${vl(mc.first.VaR,"#2471a3","1st VaR"+Lp)}${vl(mc.full.VaR,"#c0392b","full VaR"+Lp)}
+      <rect x="${pl+iw-150}" y="${pt}" width="12" height="12" fill="#2471a3" opacity="0.45"/><text x="${pl+iw-134}" y="${pt+11}" font-size="11" fill="#1d2733">first round only</text>
+      <rect x="${pl+iw-150}" y="${pt+18}" width="12" height="12" fill="#c0392b" opacity="0.45"/><text x="${pl+iw-134}" y="${pt+29}" font-size="11" fill="#1d2733">full propagation</text>
+      <text x="${pl+iw/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="#5b6b7b">global equity loss H(T)</text></svg>`;
+  }
+  function hist(arr,bins,xmax){ const c=new Array(bins).fill(0); arr.forEach(v=>{ let b=Math.floor(v/xmax*bins); if(b>=bins)b=bins-1; if(b<0)b=0; c[b]++; }); return c; }
+
+  // rebuild the previous run (if any) so results persist across navigation
+  restoreState();
+
+})();
+</script>
+</body>
