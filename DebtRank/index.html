@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="DebtRank systemic-risk calculator, documentation, and Python implementation.">
+<title>DebtRank Systemic Risk Tool</title>
+<style>
+:root{
+  --navy:#0d3a66;--blue:#1f5fa6;--ink:#1d2733;--muted:#5b6b7b;
+  --line:#dce4ec;--paper:#ffffff;--bg:#f3f6f9;--soft:#eaf1f8;--accent:#b33a3a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:54px 24px 50px}
+.hero{max-width:1040px;margin:0 auto}
+.eyebrow{margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.82}
+h1{max-width:780px;margin:0;font-size:clamp(30px,5vw,50px);line-height:1.08;letter-spacing:-.025em}
+.lead{max-width:760px;margin:18px 0 0;font-size:17px;opacity:.92}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.button{display:inline-block;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:700;text-decoration:none}
+.button.primary{background:#fff;color:var(--navy)}
+.button.secondary{border:1px solid rgba(255,255,255,.55);color:#fff}
+.button:hover{transform:translateY(-1px)}
+main{max-width:1040px;margin:0 auto;padding:32px 22px 46px}
+.notice{display:flex;gap:12px;align-items:flex-start;background:#edf6ef;border:1px solid #cfe4d3;border-radius:10px;padding:14px 16px;color:#285534}
+.notice strong{white-space:nowrap}
+h2{margin:32px 0 14px;font-size:20px;color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{display:flex;flex-direction:column;min-height:190px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(13,58,102,.05)}
+.card .tag{align-self:flex-start;background:var(--soft);color:var(--navy);border-radius:999px;padding:3px 9px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.card h3{margin:13px 0 7px;font-size:17px}
+.card p{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+.card a{margin-top:auto;color:var(--blue);font-weight:700;text-decoration:none}
+.card a:hover{text-decoration:underline}
+.about{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px}
+.about p{margin:0;color:var(--muted)}
+footer{max-width:1040px;margin:0 auto;padding:0 22px 34px;text-align:center;color:var(--muted);font-size:12px}
+footer a{color:var(--blue)}
+@media(max-width:760px){header{padding-top:38px}.grid{grid-template-columns:1fr}.notice{display:block}.notice strong{display:block;margin-bottom:4px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hero">
+    <p class="eyebrow">Financial-network analysis</p>
+    <h1>DebtRank Systemic Risk Tool</h1>
+    <p class="lead">Explore shock propagation, systemic importance, network stability, and loss distributions in financial networks using a self-contained browser calculator.</p>
+    <div class="actions">
+      <a class="button primary" href="DebtRank_Systemic_Risk_Tool_v03.html">Launch the tool</a>
+      <a class="button secondary" href="DebtRank_Users_Guide.html">Read the user&rsquo;s guide</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="notice">
+    <strong>Private by design.</strong>
+    <span>The browser tool has no server backend or outbound data calls. Uploaded CSV files and calculations remain in your browser.</span>
+  </div>
+
+  <h2>Resources</h2>
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Interactive</span>
+      <h3>Browser calculator</h3>
+      <p>Load a bilateral-exposure network or aggregate balance sheets and run DebtRank scenarios without installing software.</p>
+      <a href="DebtRank_Systemic_Risk_Tool_v03.html">Open the calculator &rarr;</a>
+    </article>
+    <article class="card">
+      <span class="tag">Documentation</span>
+      <h3>Method description</h3>
+      <p>Review the model, propagation algorithms, stability diagnostics, fire-sale extension, and references.</p>
+      <a href="DebtRank_Methods.html">Read the methods &rarr;</a>
+    </article>
+    <article class="card">
+      <span class="tag">Reproducibility</span>
+      <h3>Python implementation</h3>
+      <p>Download the command-line implementation for reproducible analysis, scripted workflows, and report generation.</p>
+      <a href="debtrank_tool.py" download>Download the Python tool &rarr;</a>
+    </article>
+  </div>
+
+  <h2>About</h2>
+  <div class="about">
+    <p>The tool implements the DebtRank framework for measuring distress propagation and systemic risk in financial networks. The user guide provides practical instructions, while the method description documents the analytical assumptions and interpretation of the results.</p>
+  </div>
+</main>
+
+<footer>
+  <p><b>Copyright &copy; 2026 Jorge A. Chan-Lau.</b> The DebtRank Systemic Risk Tool&mdash;including its HTML and Python implementations&mdash;and its accompanying documentation are licensed under the <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0 License</a>.</p>
+  <p>See the <a href="DebtRank_Systemic_Risk_Tool_v03.html#legal">complete legal notice and disclaimer</a> or the repository&rsquo;s <a href="LICENSE.md">license file</a>.</p>
+</footer>
+</body>
+</html>
