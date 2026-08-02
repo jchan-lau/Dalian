@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecture Viewer</title>
+<style>
+:root{--navy:#0d3a66;--blue:#1f5fa6}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#101820;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bar{height:54px;display:flex;align-items:center;gap:16px;padding:0 16px;background:var(--navy);color:#fff;border-bottom:1px solid rgba(255,255,255,.18)}
+.bar a{color:#fff;text-decoration:none;font-size:13px;font-weight:700;white-space:nowrap}
+.bar a:hover{text-decoration:underline}
+.title{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:600;text-align:center}
+.steps{display:flex;gap:8px;white-space:nowrap}
+.steps a{display:inline-block;border:1px solid rgba(255,255,255,.45);border-radius:6px;padding:5px 9px}
+.steps a[aria-disabled="true"]{opacity:.35;pointer-events:none}
+iframe{display:block;width:100%;height:calc(100% - 54px);border:0;background:#fff}
+.error{display:none;height:calc(100% - 54px);place-items:center;padding:30px;background:#fff;color:#8b1e1e;text-align:center}
+@media(max-width:680px){.title{font-size:12px}.steps .word{display:none}.bar{gap:9px;padding:0 10px}}
+</style>
+</head>
+<body>
+<nav class="bar" aria-label="Lecture navigation">
+  <a href="index.html">&larr; Back to Lectures</a>
+  <span class="title" id="title">Lecture Viewer</span>
+  <span class="steps">
+    <a id="previous" href="#"><span class="word">Previous</span> &lsaquo;</a>
+    <a id="next" href="#">&rsaquo; <span class="word">Next</span></a>
+  </span>
+</nav>
+<iframe id="deck" title="Lecture slides" allowfullscreen></iframe>
+<div class="error" id="error"><p>The requested lecture could not be found. <a href="index.html">Return to the lecture list</a>.</p></div>
+<script>
+const lectures = [
+  {title:"Financial Interconnectedness, Part I",file:"JCL_01_lecture_interconnectedness_part1.html"},
+  {title:"Financial Interconnectedness, Part II",file:"JCL_02_lecture_interconnectedness_part2.html"},
+  {title:"Market-Based Interconnectedness",file:"JCL_03_lecture_interconnectedness_market_based.html"},
+  {title:"Policy Design for Financial Stability",file:"JCL_04_lecture_policy_design.html"},
+  {title:"Systemic Risk in the G7",file:"JCL_05_lecture_system_g7.html"}
+];
+const requested = Number(new URLSearchParams(location.search).get("lecture"));
+const index = requested - 1;
+const deck = document.getElementById("deck");
+if(Number.isInteger(index) && lectures[index]){
+  const lecture = lectures[index];
+  document.title = lecture.title + " | Financial Networks Lectures";
+  document.getElementById("title").textContent = "Lecture " + requested + ": " + lecture.title;
+  deck.src = lecture.file;
+  deck.title = "Lecture " + requested + ": " + lecture.title;
+  const previous = document.getElementById("previous");
+  const next = document.getElementById("next");
+  if(index>0) previous.href = "viewer.html?lecture=" + (requested-1);
+  else previous.setAttribute("aria-disabled","true");
+  if(index<lectures.length-1) next.href = "viewer.html?lecture=" + (requested+1);
+  else next.setAttribute("aria-disabled","true");
+}else{
+  deck.style.display="none";
+  document.getElementById("error").style.display="grid";
+}
+</script>
+</body>
+</html>
